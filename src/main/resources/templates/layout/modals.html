@@ -1,0 +1,88 @@
+
+<!-- Modal login -->
+<div class="modal fade" id="staticBackdrop1" tabindex="-1" aria-labelledby="exampleModalLabel1" aria-hidden="true"
+    style="z-index: 4000;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content w-75">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel1">Đăng nhập</h5>
+                <button type="button" class="btn-close" aria-label="Close" data-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="login-form">
+                    <!-- Email input -->
+                    <div class="form-outline mb-4">
+                        <input type="email" id="email1" name="email" class="form-control" />
+                        <label class="form-label" for="email1">Email address</label>
+                    </div>
+
+                    <!-- password input -->
+                    <div class="form-outline mb-4">
+                        <input type="password" id="password1" name="password" class="form-control" />
+                        <label class="form-label" for="password1">Password</label>
+                    </div>
+
+                    <!-- Submit button -->
+                    <button type="button" id="btn-login-confirmed" class="btn btn-primary btn-block"
+                        data-dismiss="modal">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Modal login -->
+
+<!-- Model register -->
+<div class="modal fade" id="staticBackdrop2" tabindex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true"
+    style="z-index: 4000;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content w-75">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel2">Đăng ký</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="register-form" enctype="multipart/form-data">
+                    <!-- Name input -->
+                    <div class="form-outline mb-4">
+                        <input type="text" name="name" id="name2" class="form-control" />
+                        <label class="form-label" for="name2">Name</label>
+                    </div>
+
+                    <!-- Gender input -->
+                    <div class="form-outline mb-4">
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input value="nam" name="gender" type="radio" id="gender-male" class="custom-control-input"
+                                checked>
+                            <label for="gender-male" class="custom-control-label">nam</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input value="nữ" name="gender" type="radio" id="gender-female"
+                                class="custom-control-input">
+                            <label for="gender-female" class="custom-control-label">nữ</label>
+                        </div>
+                    </div>
+
+                    <!-- Email input -->
+                    <div class="form-outline mb-4">
+                        <input type="email" name="email" id="email2" class="form-control" />
+                        <label class="form-label" for="email2">Email address</label>
+                    </div>
+
+                    <!-- password input -->
+                    <div class="form-outline mb-4">
+                        <input type="password" name="password" id="password2" class="form-control" />
+                        <label class="form-label" for="password2">Password</label>
+                    </div>
+
+                    <!-- Submit button -->
+                    <button type="button" id="btn-register-confirmed" class="btn btn-primary btn-block"
+                        data-dismiss="modal">Sign
+                        up</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Model end register -->
+

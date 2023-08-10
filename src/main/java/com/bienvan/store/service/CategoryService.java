@@ -33,4 +33,8 @@ public class CategoryService {
     public Optional<Category> findByName(String name){
         return categoryRepository.findByName(name);
     }
+
+    public Optional<Category> findById(Long id){
+        return categoryRepository.findById(id);
+    }
 }

@@ -35,12 +35,16 @@ public class Product {
     @Min(value = 1, message = "Giá phải lớn hơn hoặc bằng 1")
     private double price;
 
+    private String color;
+
+    private String brand;
+
     // Ví dụ khóa ngoại có quan hệ nhiều-1 (nhiều Product thuộc về một Category)
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cate_id")
     private Category category;
 

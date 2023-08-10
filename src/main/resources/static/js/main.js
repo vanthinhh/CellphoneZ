@@ -140,10 +140,22 @@ jQuery(document).ready(function($) {
 				$(this).closest('.input-group').find('.form-control').val(parseInt(0));
 			}
 		});
-		$('.js-btn-plus').on('click', function(e){
+		// $('.js-btn-plus').on('click', function(e){
+		// 	e.preventDefault();
+
+		// 	$(this).closest('.input-group').find('.form-control').val(parseInt($(this).closest('.input-group').find('.form-control').val()) + 1);
+		// });
+		$('.js-btn-plus').on('click', function(e) {
 			e.preventDefault();
-			$(this).closest('.input-group').find('.form-control').val(parseInt($(this).closest('.input-group').find('.form-control').val()) + 1);
-		});
+		  
+			var $input = $(this).closest('.input-group').find('.form-control');
+			var currentValue = parseInt($input.val());
+			var maxLimit = parseInt($input.attr('max'));
+		  
+			if (currentValue < maxLimit) {
+			  $input.val(currentValue + 1);
+			}
+		  });
 	};
 	sitePlusMinus();
 

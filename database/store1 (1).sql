@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 30, 2023 at 12:05 PM
+-- Generation Time: Aug 10, 2023 at 07:20 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -61,8 +61,8 @@ CREATE TABLE `orders` (
 --
 
 INSERT INTO `orders` (`total`, `id`, `user_id`, `address`, `create_at`, `phone`, `status`) VALUES
-(10000, 1, 1, 'Đắk Lắk', '7/7/2023', '0333091697', 'pending'),
-(10000, 2, 1, 'ĐH Tôn Đức Thắng, Quận 7, TP. Hồ Chí Minh', '2018-12-31', '0333091697', 'pending');
+(355060000, 19, NULL, 'Saigon', '2023-08-10T09:33:57.347069200', '0123456789', 'Pending'),
+(26790000, 20, NULL, 'Saigon', '2023-08-10T09:35:10.337046200', '0123456789', 'Pending');
 
 -- --------------------------------------------------------
 
@@ -71,12 +71,21 @@ INSERT INTO `orders` (`total`, `id`, `user_id`, `address`, `create_at`, `phone`,
 --
 
 CREATE TABLE `order_items` (
-  `purchasePrice` double NOT NULL,
+  `purchase_price` double NOT NULL,
   `quantity` int(11) NOT NULL,
   `id` bigint(20) NOT NULL,
   `order_id` bigint(20) DEFAULT NULL,
   `product_id` bigint(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `order_items`
+--
+
+INSERT INTO `order_items` (`purchase_price`, `quantity`, `id`, `order_id`, `product_id`) VALUES
+(24790000, 10, 31, 19, 16),
+(26790000, 4, 32, 19, 15),
+(26790000, 1, 33, 20, 15);
 
 -- --------------------------------------------------------
 
@@ -92,23 +101,26 @@ CREATE TABLE `products` (
   `user_id` bigint(20) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
   `image` varchar(255) DEFAULT NULL,
-  `name` varchar(255) DEFAULT NULL
+  `name` varchar(255) DEFAULT NULL,
+  `color` varchar(255) DEFAULT NULL,
+  `brand` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`price`, `quantity`, `cate_id`, `id`, `user_id`, `description`, `image`, `name`) VALUES
-(26790000, 99, 2, 15, 1, 'Điện thoại xịn', 'iphone-14-pro-max-tim-thumb-600x600.jpg', 'iPhone 14 Pro Max'),
-(24790000, 800, 2, 16, 1, 'ngon', 'iphone-14-pro-vang-thumb-600x600.jpg', 'iPhone 14 Pro'),
-(10890000, 50, 2, 17, 1, 'ngoo', 'iphone-11-trang-600x600.jpg', 'iPhone 11'),
-(19190000, 11, 2, 18, 1, 'ngoo', 'iphone-14-128gb-vang-thumbnew-600x600.jpeg', 'iPhone 14'),
-(21790000, 123, 2, 19, 1, 'iPhone 14 Plus', 'iPhone-14-plus-thumb-den-600x600.jpg', 'iPhone 14 Plus'),
-(15990000, 321, 2, 20, 1, 'iPhone 13 mini 128GB', 'iphone-13-mini-pink-1-600x600.jpg', 'iPhone 13 mini 128GB'),
-(16990000, 33, 2, 21, 1, 'iPhone 13', 'iphone-13-xanh-la-thumb-new-600x600.jpg', 'iPhone 13'),
-(15490000, 55, 2, 22, 1, 'iPhone 12', 'iphone-12-tim-1-600x600.jpg', 'iPhone 12'),
-(14990000, 33, 1, 23, 1, 'MSI Gaming GF63 Thin 11SC i5 11400H (664VN)', 'msi-gaming-gf63-thin-11sc-i5-664vn-glr-thumb-600x600.jpg', 'MSI Gaming GF63 Thin 11SC i5 11400H (664VN)');
+INSERT INTO `products` (`price`, `quantity`, `cate_id`, `id`, `user_id`, `description`, `image`, `name`, `color`, `brand`) VALUES
+(26790000, 99, 2, 15, 1, 'Điện thoại xịn', 'iphone-14-pro-max-tim-thumb-600x600.jpg', 'iPhone 14 Pro Max', 'black', 'apple'),
+(24790000, 800, 2, 16, 1, 'ngon', 'iphone-14-pro-vang-thumb-600x600.jpg', 'iPhone 14 Pro', 'yellow', 'apple'),
+(10890000, 50, 2, 17, 1, 'ngoo', 'iphone-11-trang-600x600.jpg', 'iPhone 11', 'white', 'apple'),
+(19190000, 11, 2, 18, 1, 'ngoo', 'iphone-14-128gb-vang-thumbnew-600x600.jpeg', 'iPhone 14', 'yellow', 'apple'),
+(21790000, 123, 2, 19, 1, 'iPhone 14 Plus', 'iPhone-14-plus-thumb-den-600x600.jpg', 'iPhone 14 Plus', 'black', 'apple'),
+(15990000, 321, 2, 20, 1, 'iPhone 13 mini 128GB', 'iphone-13-mini-pink-1-600x600.jpg', 'iPhone 13 mini 128GB', 'pink', 'apple'),
+(16990000, 33, 2, 21, 1, 'iPhone 13', 'iphone-13-xanh-la-thumb-new-600x600.jpg', 'iPhone 13', 'green', 'apple'),
+(15490000, 55, 2, 22, 1, 'iPhone 12', 'iphone-12-tim-1-600x600.jpg', 'iPhone 12', 'purple', 'apple'),
+(14990000, 33, 1, 23, 1, 'MSI Gaming GF63 Thin 11SC i5 11400H (664VN)', 'msi-gaming-gf63-thin-11sc-i5-664vn-glr-thumb-600x600.jpg', 'MSI Gaming GF63 Thin 11SC i5 11400H (664VN)', 'black', 'msi'),
+(4190000, 123, 2, 24, 1, 'đẹp', 'samsung-galaxy-a14-tlte-thumb-den-600x600.jpg', 'Samsung Galaxy A14 4G', 'black', 'samsung');
 
 -- --------------------------------------------------------
 
@@ -186,19 +198,19 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `users`

@@ -28,7 +28,7 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<?> getListProduct() {
         List<ProductDto> products = productService.getAllProducts();
-        System.out.println("Hello");
+        // System.out.println("Hello");
         return ResponseEntity.ok(products);
     }
 
@@ -49,7 +49,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createProduct(@ModelAttribute @Valid ProductDto productDto, BindingResult bindingResult)
+    public ResponseEntity<?> createProduct(@ModelAttribute @Valid ProductInput productDto, BindingResult bindingResult)
             throws IOException {
         Map<String, Object> res = new HashMap<>();
         // System.out.println("Post: "+productDto.toString());
@@ -117,7 +117,7 @@ public class ProductController {
     }
 
     @PutMapping // update
-    public ResponseEntity<Map<String, Object>> updateCategory(@ModelAttribute @Valid ProductDto productDto,
+    public ResponseEntity<Map<String, Object>> updateCategory(@ModelAttribute @Valid ProductInput productDto,
             BindingResult bindingResult) throws IOException {
         Map<String, Object> res = new HashMap<>();
 

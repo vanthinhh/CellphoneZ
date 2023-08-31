@@ -21,11 +21,7 @@
     <link href="../css/sb-admin-2.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
-    <style>
-        * {
-            font-size: 1.2rem;
-        }
-    </style>
+
 </head>
 
 <body id="page-top">
@@ -66,16 +62,20 @@
                                     </thead>
                                     <tbody>
                                         <tr th:each="order : ${orders}" th:id="${order.id}">
-                                            <td ><a th:text="${order.id}" href="https://www.w3schools.com"></a></td>
+                                            <td><a th:text="${order.id} + ' (Xem chi tiết)'"
+                                                    th:href="@{/admin/order-detail/__${order.id}__}"></a></td>
                                             <td th:text="${order.userId.name}"></td>
                                             <td th:text="${order.address}"></td>
                                             <td th:text="${order.create_at}"></td>
                                             <td th:text="${order.phone}"></td>
-                                            <td th:text="${order.status}"></td>
-                                            <td th:text="${order.total}"></td>
+                                            <td><span th:class="@{badge __${order.getStatusColor}__}" th:text="${order.status}">Success</span></td>
+                                            <td
+                                                th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 0, 'POINT')} + ' ₫'">
+                                            </td>
                                             <td>
-                                                <button class="btn btn-sm btn-outline-success btn-accept">Chấp nhận</button>
-                                                <button class="btn btn-sm btn-outline-danger btn-cancel">Hủy</button>
+                                                <button th:if="${order.status} == 'Đang chờ'" class="btn btn-sm btn-outline-success btn-accept"
+                                                    th:data-id="${order.id}">Nhận</button>
+                                                <button class="btn btn-sm btn-outline-danger btn-cancel" th:data-id="${order.id}">Hủy</button>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -275,128 +275,46 @@
 
 
     <script type="text/javascript">
-
-        function submitForm() {
-            const formData = new FormData(document.getElementById('add-product-form'));
-            // Bổ sung giá trị user_id vào formData (có thể lấy giá trị này từ các trường khác trên trang)
-            formData.append('user_id', 1);
-
-            fetch('/product', {
-                method: 'POST',
-                body: formData
-            }).then(response => response.json())
-                .then(data => {
-                    // Xử lý kết quả từ server (nếu cần)
-                    if (data.code === 0) {
-                        Swal.fire("Thành Công", "Đã thêm thành công", "success");
-                        setTimeout(function () {
-                            location.href = "";
-                        }, 2000);
-                    } else {
-                        Swal.fire("Thất Bại", data.message, "error");
-                    }
-                    console.log(data);
-                })
-                .catch(error => {
-                    // Xử lý lỗi (nếu có)
-                    console.error(error);
-                });
-        }
-
-        $('.btn-add').click(e => {
-            $('#confirm-add-dialog').modal('show')
-        })
-
-        $('#btn-add-confirmed').click(e => {
-            submitForm();
-        })
-
-        $('.btn-delete').click(e => {
-            let btn = e.target
-            let id = btn.dataset.id
-            let name = btn.dataset.name
-            $('#delete-username').html(name)
-            $('#btn-delete-confirmed').attr('data-id', id)
-            $('#confirm-delete-dialog').modal('show')
-        })
-
-        $('#btn-delete-confirmed').click(e => {
-            $('#confirm-delete-dialog').modal('hide')
-            let btn = e.target
-            let id = btn.dataset.id
-
-            fetch('/product/' + id, {
-                method: 'DELETE'
+        function myFunction(id, status) {
+            let data = {
+                id: id,
+                status: status
+            }
+            fetch('/order', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8'
+                },
+                body: JSON.stringify(data)
             })
                 .then(res => res.json())
                 .then(json => {
+                    console.log('client', json);
                     if (json.code === 0) {
-                        $(id)
-                        document.getElementById(id).remove();
-                        var initialValue = parseInt($("#total").text());
-
-                        // Subtract 1 from the initial value
-                        var newValue = initialValue - 1;
-
-                        // Update the strong element with the new value
-                        $("#total").text(newValue);
-                        Swal.fire("Thành Công", "Đã xóa người dùng thành công", "success");
-                    } else {
-                        Swal.fire("Thất Bại", json.message, "error");
-                    }
-                    console.log(json)
-                })
-                .catch(console.log)
-
-        })
-
-
-        $('.btn-edit').click(e => {
-            let btn = e.target
-            let id = btn.dataset.id
-            let name = btn.dataset.name
-            let description = btn.dataset.description
-            let price = btn.dataset.price
-            let quantity = btn.dataset.quantity
-            $('#edit-id').attr('value', id)
-            $('#edit-name').attr('value', name)
-            $('#edit-description').attr('value', description)
-            $('#edit-description').html(description)
-            $('#edit-price').attr('value', price)
-            $('#edit-quantity').attr('value', quantity)
-            $('#btn-edit-confirmed').attr('data-id', id)
-
-            $('#confirm-edit-dialog').modal('show')
-
-        })
-
-        $('#btn-edit-confirmed').click(e => {
-            let btn = e.target
-            let id = btn.dataset.id
-
-            const formData = new FormData(document.getElementById('edit-product-form'));
-            // Bổ sung giá trị user_id vào formData (có thể lấy giá trị này từ các trường khác trên trang)
-
-            fetch('/product', {
-                method: 'PUT',
-                body: formData
-            }).then(response => response.json())
-                .then(data => {
-                    // Xử lý kết quả từ server (nếu cần)
-                    if (data.code === 0) {
-                        Swal.fire("Thành Công", "Chỉnh sữa thành công", "success");
+                        Swal.fire("Thành Công", json.message, "success");
                         setTimeout(function () {
                             location.href = "";
                         }, 2000);
                     } else {
-                        Swal.fire("Thất Bại", data.message, "error");
+                        console.log('client', json)
+                        Swal.fire("Thất Bại", json.message, "error");
                     }
-                    console.log(data);
                 })
-                .catch(error => {
-                    // Xử lý lỗi (nếu có)
-                    console.error(error);
-                });
+                .catch(console.log)
+        }
+
+        $('.btn-accept').click(e => {
+            let btn = e.target
+            let id = btn.dataset.id
+            myFunction(id, 'Đang giao');
+
+        })
+
+        $('.btn-cancel').click(e => {
+            let btn = e.target
+            let id = btn.dataset.id
+            myFunction(id, 'Đang chờ');
+
         })
 
     </script>

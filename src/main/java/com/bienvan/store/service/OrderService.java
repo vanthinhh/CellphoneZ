@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.bienvan.store.model.Order;
+import com.bienvan.store.model.User;
 import com.bienvan.store.repository.OrderRepository;
 
 @Service
@@ -20,6 +21,14 @@ public class OrderService {
 
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
+    }
+
+    public List<Order> getOrdersByUserId(User entity) {
+        return orderRepository.findAllByUserId(entity);
+    }
+
+    public List<Order> getOrdersByUserId(Long id){
+        return orderRepository.findOrdersByUserId(id);
     }
 
     public Optional<Order> getOrderById(Long id) {

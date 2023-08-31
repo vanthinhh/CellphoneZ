@@ -111,7 +111,7 @@
                 <button class="btn btn-outline-primary btn-sm btn-block">Tiếp tục mua sắm</button>
               </div>
             </div>
-            <div class="row">
+            <!-- <div class="row">
               <div class="col-md-12">
                 <label class="text-black h4" for="coupon">Mã giảm giá</label>
                 <p>Nếu bạn có phiếu giảm giá hãy nhập ở đây</p>
@@ -122,7 +122,7 @@
               <div class="col-md-4">
                 <button class="btn btn-primary btn-sm">Apply Coupon</button>
               </div>
-            </div>
+            </div> -->
           </div>
           <div class="col-md-6 pl-5">
             <div class="row justify-content-end">
@@ -132,14 +132,6 @@
                     <h3 class="text-black h4 text-uppercase">Tổng tiền thanh toán</h3>
                   </div>
                 </div>
-                <!-- <div class="row mb-3">
-                  <div class="col-md-6">
-                    <span class="text-black">Tổng phụ</span>
-                  </div>
-                  <div class="col-md-6 text-right">
-                    <strong th:text="${#numbers.formatDecimal(cart.calculateTotalPrice, 0, 'COMMA', 0, 'POINT') + ' ₫'}" class="text-black">0 ₫</strong>
-                  </div>
-                </div> -->
                 <div class="row mb-5">
                   <div class="col-md-6">
                     <span class="text-black">Tổng cộng</span>
@@ -150,10 +142,10 @@
                       class="text-black">0 ₫</strong>
                   </div>
                 </div>
-
                 <div class="row">
                   <div class="col-md-12">
-                    <button id="cart-pay" class="btn btn-primary btn-lg py-3 btn-block">Tiến
+                    <button id="cart-pay" class="btn btn-primary btn-lg py-3 btn-block" data-toggle="modal"
+                      data-target="#dathang">Tiến
                       hành thanh toán</button>
                   </div>
                 </div>
@@ -165,6 +157,7 @@
     </div>
 
     <!-- Include the footer fragment -->
+
     <div th:replace="~{layout/footer :: footer}"></div>
   </div>
   <!-- Nhúng file modals.html -->
@@ -185,11 +178,49 @@
   <script src="../js/user/auth.js"></script>
 
   <script>
-    $('#cart-pay').click(e => {
+    $(document).ready(function () {
+      $("#btn-checkout-confirmed").click(function () {
+        const name = $("#name").val();
+        const phone = $("#phone").val();
+        const streetname = $("#streetname").val();
+        const city = $("#city").val();
+        const district = $("#district").val();
+        const ward = $("#ward").val();
 
-      location.href = "/cart/pay";
+        const data = {
+          name: name,
+          phone: phone,
+          address: streetname + ', ' + ward + ', ' + district + ', ' + city
+        };
+        console.error(data);
+        // Gửi yêu cầu POST đến server bằng Fetch API
+        fetch("/cart/checkout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        })
+          .then(response => response.json())
+          .then(data => {
+            // Xử lý kết quả từ server bằng jQuery (nếu cần)
+            if (data.code === 0) {
+              Swal.fire("Thành Công", data.message, "success");
+              setTimeout(function () {
+                location.href = "/cart/check";
+              }, 1500);
+            } else {
+              Swal.fire("Thất Bại", data.message, "error");
+            }
+            console.log(data);
+          })
+          .catch(error => {
+            console.error("Lỗi khi gửi yêu cầu:", error);
+          });
+      });
 
-    })
+    });
+
   </script>
 
   <script th:inline="javascript">
@@ -238,8 +269,120 @@
         });
     })
 
+
+
   </script>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+  <script>
+    var citis = document.getElementById("city");
+    var districts = document.getElementById("district");
+    var wards = document.getElementById("ward");
+    var Parameter = {
+      url: "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json",
+      method: "GET",
+      responseType: "application/json",
+    };
+    var promise = axios(Parameter);
+    promise.then(function (result) {
+      renderCity(result.data);
+    });
+
+    function renderCity(data) {
+      for (const x of data) {
+        citis.options[citis.options.length] = new Option(x.Name, x.Name);
+      }
+      citis.onchange = function () {
+        district.length = 1;
+        ward.length = 1;
+        if (this.value != "") {
+          const result = data.filter(n => n.Name === this.value);
+
+          for (const k of result[0].Districts) {
+            district.options[district.options.length] = new Option(k.Name, k.Name);
+          }
+        }
+      };
+      district.onchange = function () {
+        ward.length = 1;
+        const dataCity = data.filter((n) => n.Name === citis.value);
+        if (this.value != "") {
+          const dataWards = dataCity[0].Districts.filter(n => n.Name === this.value)[0].Wards;
+
+          for (const w of dataWards) {
+            wards.options[wards.options.length] = new Option(w.Name, w.Name);
+          }
+        }
+      };
+    }
+  </script>
+
+  <script>
+    const form = document.getElementById("checkout-form");
+
+    // Function to check the input data
+    function checkInput() {
+      // Check if the name input is empty
+      const name = document.getElementById("name").value;
+      if (name === "") {
+        alert("Vui lòng nhập tên người nhận.");
+        return false;
+      }
+
+      // Check if the phone number is empty or not 11 digits long
+      const phone = document.getElementById("phone").value;
+      if (phone === "" || phone.length !== 10) {
+        alert("Vui lòng nhập số điện thoại 10 số.");
+        return false;
+      }
+
+      // Check if the street name input is empty
+      const streetname = document.getElementById("streetname").value;
+      if (streetname === "") {
+        alert("Vui lòng nhập tên đường, tòa nhà, số nhà.");
+        return false;
+      }
+
+      // Check if the city input is selected
+      const city = document.getElementById("city").value;
+      if (city === "") {
+        alert("Vui lòng chọn tỉnh thành.");
+        return false;
+      }
+
+      // Check if the district input is selected
+      const district = document.getElementById("district").value;
+      if (district === "") {
+        alert("Vui lòng chọn quận huyện.");
+        return false;
+      }
+
+      // Check if the ward input is selected
+      const ward = document.getElementById("ward").value;
+      if (ward === "") {
+        alert("Vui lòng chọn phường xã.");
+        return false;
+      }
+
+      // All input data is valid
+      return true;
+    }
+
+    // Add event listener to the form
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      // Check the input data
+      const isValid = checkInput();
+
+      if (!isValid) {
+        return;
+      }
+
+      // Submit the form
+      form.submit();
+    });
+  </script>
 
 </body>
 

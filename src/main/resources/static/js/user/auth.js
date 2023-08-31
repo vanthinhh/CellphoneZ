@@ -28,7 +28,6 @@ $('#btn-login-confirmed').click(e => {
 $('#btn-register-confirmed').click(e => {
 
     const formData = new FormData(document.getElementById('register-form'));
-    formData.append("role", "Khong sua duoc dau ahihi")
     fetch('/user/register', {
         method: 'POST',
         body: formData

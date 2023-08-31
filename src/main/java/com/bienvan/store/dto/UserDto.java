@@ -1,6 +1,6 @@
-package com.bienvan.store.model.dto;
+package com.bienvan.store.dto;
 
-import jakarta.validation.constraints.*;
+import javax.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;

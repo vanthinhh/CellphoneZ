@@ -59,7 +59,7 @@
                             <h2 th:text="${product.name}" class="text-black">Tank Top T-Shirt</h2>
                             <!-- <h5 th:text="'Color:' + ${product.color}" class="mb-4"></h5> -->
                             <!-- <button type="button" th:text="${product.color}" class="btn"></button> -->
-                            <h3><span th:text="${product.color}" class="badge badge-secondary">New</span></h3>
+                            <h3><span th:text="${product.color.name}" class="badge badge-secondary">New</span></h3>
                             <!-- <p th:text="${product.description}" class="mb-4"></p> -->
                             <p><strong th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'"
                                     class="text-primary h4">0 ₫</strong></p>

@@ -59,7 +59,7 @@
                 </thead>
                 <tbody>
                   <tr th:each="order : ${orders}">
-                    <th th:text="${order.id}" scope="row">1</th>
+                    <th scope="row"><a th:href="@{/cart/order-detail/__${order.id}__}" th:text="${order.id} + ' (Xem chi tiết)'"></a></th>
                     <td th:text="${order.status}" >Mark</td>
                     <td th:text="${order.create_at}" >Otto</td>
                     <td th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'" >@mdo</td>

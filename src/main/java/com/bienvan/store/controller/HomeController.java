@@ -1,6 +1,5 @@
 package com.bienvan.store.controller;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import com.bienvan.store.model.*;
 import com.bienvan.store.service.*;
 
-import jakarta.servlet.http.HttpSession;
+import javax.servlet.http.HttpSession;
 
 @Controller
 public class HomeController {
@@ -30,35 +29,49 @@ public class HomeController {
     @Autowired
     OrderItemService orderItemService;
 
+    @Autowired
+    BrandService brandService;
+
+    @Autowired
+    ColorService colorService;
+
     @GetMapping(value = { "", "/", "/home" })
     public String getHomePage(Model model, HttpSession session, @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "8") int size) {
         List<Product> ps = productService.getProducts();
         List<Category> categories = categoryService.getAllCategories();
+        List<Brand> brands = brandService.getBrands();
+        List<Color> colors = colorService.getColors();
         // int pageNumber = (page > 0) ? (page - 1) : 0; // Điều chỉnh số trang
         // Pageable pageable = PageRequest.of(pageNumber, size);
         // Page<Product> products = productService.findAll(pageable);
         // model.addAttribute("products", ps);
         // model.addAttribute("ps", ps);
 
+        session.setAttribute("brands", brands);
+        session.setAttribute("colors", colors);
         session.setAttribute("products", ps);
         session.setAttribute("categories", categories);
 
-        
         return "index";
     }
 
     @PostMapping(value = { "", "/", "/home" })
-    public String searchProducts(@RequestParam(name = "color", required = false) String color,
-            @RequestParam(name = "priceRange", required = false, defaultValue = "0-999999999") String priceRange,
+    public String searchProducts(@RequestParam(required = false) String color,
+            @RequestParam(required = false, defaultValue = "0-999999999") String priceRange,
             @RequestParam(name = "category", required = false) Long categoryId,
-            @RequestParam(name = "brand", required = false) String brand, HttpSession session) {
-
+            @RequestParam(required = false) String brand, HttpSession session) {
+        Brand byBrand = null;
+        Color byColor = null;
         if (color.isEmpty()) {
             color = null;
+        } else {
+            byColor = colorService.findByName(color);
         }
         if (brand.isEmpty()) {
             brand = null;
+        } else {
+            byBrand = brandService.findByName(brand);
         }
 
         String[] arr = priceRange.split("-");
@@ -68,10 +81,10 @@ public class HomeController {
         if (categoryId != null) {
             Category category = categoryService.findById(categoryId).orElse(null);
             if (category != null) {
-                products = productService.search(minPrice, maxPrice, brand, color, category);
+                products = productService.search(minPrice, maxPrice, byBrand, byColor, category);
             }
         } else {
-            products = productService.search(minPrice, maxPrice, brand, color, null);
+            products = productService.search(minPrice, maxPrice, byBrand, byColor, null);
         }
 
         session.setAttribute("products", products);
@@ -80,14 +93,24 @@ public class HomeController {
     }
 
     @GetMapping(value = { "/profile" })
-    public String getProfilePage(Model model) {
+    public String getProfilePage(Model model, HttpSession session) {
+        if ((Long) session.getAttribute("id") == null) {
+            return "404";
+        }
         // List<UserDto> userList = userService.getAllUsers();
         // model.addAttribute("users", userList);
         return "profile";
     }
 
+    @GetMapping(value = { "/login" })
+    public String login(Model model) {
+        // List<UserDto> userList = userService.getAllUsers();
+        // model.addAttribute("users", userList);
+        return "login";
+    }
+
     @GetMapping(value = { "/product-detail/{id}" })
-    public String getProductDetailPage(@PathVariable("id") Long id, Model model) {
+    public String getProductDetailPage(@PathVariable Long id, Model model) {
         Product product = productService.getProductById(id).orElse(null);
 
         if (product != null) {

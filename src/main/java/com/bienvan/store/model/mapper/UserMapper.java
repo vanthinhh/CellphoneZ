@@ -1,7 +1,7 @@
 package com.bienvan.store.model.mapper;
 
+import com.bienvan.store.dto.UserDto;
 import com.bienvan.store.model.User;
-import com.bienvan.store.model.dto.UserDto;
 
 public class UserMapper {
     public static UserDto toUserDto(User user){
@@ -10,8 +10,6 @@ public class UserMapper {
         tmp.setEmail(user.getEmail());
         tmp.setName(user.getName());
         tmp.setGender(user.getGender());
-        tmp.setRole(user.getRole());
-        
         return tmp;
     }
 }

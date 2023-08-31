@@ -1,7 +1,7 @@
 package com.bienvan.store.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
+import javax.persistence.*;
+import javax.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -34,5 +34,4 @@ public class OrderItem {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    // Constructors, getters, and setters
 }

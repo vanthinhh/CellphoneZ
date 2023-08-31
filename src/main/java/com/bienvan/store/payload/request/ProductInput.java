@@ -1,9 +1,9 @@
-package com.bienvan.store.model.dto;
+package com.bienvan.store.payload.request;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import lombok.*;
 
 @Data

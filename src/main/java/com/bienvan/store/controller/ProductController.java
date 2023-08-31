@@ -5,13 +5,16 @@ import java.nio.file.*;
 import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import com.bienvan.store.dto.*;
 import com.bienvan.store.model.*;
-import com.bienvan.store.model.dto.*;
+import com.bienvan.store.payload.request.ProductInput;
 import com.bienvan.store.service.*;
 
-import jakarta.validation.Valid;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/product")
@@ -21,6 +24,12 @@ public class ProductController {
 
     @Autowired
     CategoryService categoryService;
+
+    @Autowired
+    BrandService brandService;
+
+    @Autowired
+    ColorService colorService;
 
     @Autowired
     UserService userService;
@@ -88,6 +97,8 @@ public class ProductController {
             return ResponseEntity.badRequest().body(res);
         }
 
+        // Brand brand = brandService.findByName(productDto.getBrand());
+        // Color color = colorService.findByName(productDto.getColor());
         Product product = new Product();
         product.setName(productDto.getName());
         product.setDescription(productDto.getDescription());
@@ -96,6 +107,8 @@ public class ProductController {
         product.setImage(productDto.getImage().getOriginalFilename());
         product.setUser(user);
         product.setCategory(category);
+        // product.setBrand(brand);
+        // product.setColor(color);
         Product created = productService.createProduct(product);
 
         String staticFolderPath = "src/main/resources/static/img/product/" + created.getId() + "/";
@@ -147,9 +160,9 @@ public class ProductController {
 
             // User user = userService.getUserById(productDto.getUser_id()).orElse(null);
             // if (user == null) {
-            //     res.put("code", 1);
-            //     res.put("message", "Vui lòng chọn chính xác người thêm sản phẩm");
-            //     return ResponseEntity.badRequest().body(res);
+            // res.put("code", 1);
+            // res.put("message", "Vui lòng chọn chính xác người thêm sản phẩm");
+            // return ResponseEntity.badRequest().body(res);
             // }
 
             Category category = categoryService.getCategoryById(productDto.getCategory_id()).orElse(null);
@@ -214,4 +227,11 @@ public class ProductController {
     // List<UserDto> users = userService.searchUser(name);
     // return ResponseEntity.ok(users);
     // }
+
+    @GetMapping("/search")
+    public String searchProducts(@RequestParam("keyword") String keyword, Model model) {
+        List<Product> products = productService.findByNameContaining(keyword);
+        model.addAttribute("products", products);
+        return "search_results";
+    }
 }

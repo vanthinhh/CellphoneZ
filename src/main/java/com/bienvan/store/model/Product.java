@@ -3,9 +3,9 @@ package com.bienvan.store.model;
 import java.util.HashSet;
 import java.util.Set;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
+import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import lombok.*;
 
 @Entity
@@ -14,7 +14,6 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @Table(name = "products")
 public class Product {
     @Id
@@ -35,10 +34,6 @@ public class Product {
     @Min(value = 1, message = "Giá phải lớn hơn hoặc bằng 1")
     private double price;
 
-    private String color;
-
-    private String brand;
-
     // Ví dụ khóa ngoại có quan hệ nhiều-1 (nhiều Product thuộc về một Category)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -47,6 +42,14 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cate_id")
     private Category category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "color_id")
+    private Color color;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "brand_id")
+    private Brand brand;
 
     @OneToMany(mappedBy = "product")
     private Set<OrderItem> orderItems = new HashSet<>();

@@ -8,8 +8,9 @@
 
                 <div class="col-6 col-md-4 order-2 order-md-1 site-search-icon text-left">
                     <form action="" class="site-block-top-search">
-                        <span class="icon icon-search2"></span>
-                        <input type="text" class="form-control border-0" placeholder="Search">
+                        <!-- <span class="icon icon-search2"></span> -->
+                        <!-- Đây là tìm kiếm -->
+                        <input type="text" class="form-control border-0" placeholder="">
                     </form>
                 </div>
 
@@ -95,9 +96,9 @@
                         xuất</a></li>
                 <li th:if="${session.name}"><a href="/profile" th:text="${session.name}" id="logout"
                         class="btn btn-default btn-rounded mb-4">Tên User</a></li>
-                <li th:unless="${session.name}"><a href="/cart/check"
+                <li th:if="${session.name}"><a href="/cart/check"
                         class="btn btn-default btn-rounded mb-4">My order</a></li>
-                <li th:if="${session.role == 'admin'}"><a href="/admin" id="admin-page"
+                <li th:if="${session.ROLE_USER}"><a href="/admin" id="admin-page"
                         class="btn btn-default btn-rounded mb-4">Admin</a></li>
             </ul>
         </div>

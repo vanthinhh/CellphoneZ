@@ -35,7 +35,7 @@ public class CategoryController {
         else{
             res.put("code", 1);
             res.put("message", "Find category failed");
-        } 
+        }
         return ResponseEntity.ok(res);
     }
 

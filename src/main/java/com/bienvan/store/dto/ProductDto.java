@@ -1,7 +1,7 @@
-package com.bienvan.store.model.dto;
+package com.bienvan.store.dto;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import lombok.*;
 
 @Data
@@ -23,9 +23,9 @@ public class ProductDto {
     @Min(value = 0, message = "Số lượng phải lớn hơn 0")
     private int quantity;
 
-    private String color;
+    private Long color_id;
 
-    private String brand;
+    private long brand_id;
 
     private Long user_id;
 
@@ -34,16 +34,16 @@ public class ProductDto {
     public ProductDto(Long id, String name,
             String description,
             double price, String image,
-            int quantity, String color, String brand, Long user_id,
-            Long category_id) {
+            int quantity, Long color_id, long brand_id,
+            Long user_id, Long category_id) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.price = price;
         this.image = image;
         this.quantity = quantity;
-        this.color = color;
-        this.brand = brand;
+        this.color_id = color_id;
+        this.brand_id = brand_id;
         this.user_id = user_id;
         this.category_id = category_id;
     }

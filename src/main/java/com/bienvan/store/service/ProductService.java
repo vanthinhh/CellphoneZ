@@ -9,9 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.bienvan.store.model.Category;
-import com.bienvan.store.model.Product;
-import com.bienvan.store.model.dto.ProductDto;
+import com.bienvan.store.dto.ProductDto;
+import com.bienvan.store.model.*;
 import com.bienvan.store.repository.ProductRepository;
 
 @Service
@@ -33,7 +32,7 @@ public class ProductService {
         if (!products.isEmpty()) {
             for (Product p : products) {
                 ProductDto tmp = new ProductDto(p.getId(), p.getName(), p.getDescription(), p.getPrice(), p.getImage(),
-                        p.getQuantity(), p.getColor(), p.getBrand(), p.getUser().getId(), p.getCategory().getId());
+                        p.getQuantity(), p.getColor().getId(), p.getBrand().getId(), p.getUser().getId(), p.getCategory().getId());
                 productDtos.add(tmp);
             }
             return productDtos;
@@ -57,9 +56,13 @@ public class ProductService {
         return productRepository.findAll(pageable);
     }
 
-    public List<Product> search(double minPrice, double maxPrice, String brand, String color, Category category) {
+    public List<Product> search(double minPrice, double maxPrice, Brand brand, Color color, Category category) {
         return productRepository.findByPriceBetweenAndBrandAndColorAndCategory(minPrice, maxPrice, brand, color,
                 category);
+    }
+
+    public List<Product> findByNameContaining(String keyword){
+        return productRepository.findByNameContaining(keyword);
     }
 
 

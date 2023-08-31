@@ -1,4 +1,4 @@
-package com.bienvan.store.model.dto;
+package com.bienvan.store.dto;
 
 import com.bienvan.store.model.Category;
 

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.bienvan.store.model.Order;
 import com.bienvan.store.model.OrderItem;
 import com.bienvan.store.repository.OrderItemRepository;
 
@@ -19,5 +20,9 @@ public class OrderItemService {
 
     public List<OrderItem> getAllOrderItems() {
         return orderItemRepository.findAll();
+    }
+
+     public List<OrderItem> getOrderItemsByOrder(Order order) {
+        return orderItemRepository.findAllByOrder(order);
     }
 }

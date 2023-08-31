@@ -3,10 +3,11 @@ package com.bienvan.store.service;
 import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.bienvan.store.dto.UserDto;
 import com.bienvan.store.model.*;
-import com.bienvan.store.model.dto.UserDto;
 import com.bienvan.store.model.mapper.UserMapper;
 import com.bienvan.store.repository.*;
 
@@ -15,8 +16,8 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
-    public User createUser(User order) {
-        return userRepository.save(order);
+    public User createUser(User user) {
+        return userRepository.save(user);
     }
 
     public List<UserDto> getAllUsers() {
@@ -44,9 +45,15 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-    public boolean checkLogin(String email, String password){
+    public boolean existsByEmail(String email){
+        return userRepository.existsByEmail(email);
+    }
+
+    public boolean checkLogin(String email, String rawPassword){
         Optional<User> optional = findByEmail(email);
-        if(optional.isPresent() && optional.get().getPassword().equals(password)){
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+      
+        if(optional.isPresent() && passwordEncoder.matches(rawPassword, optional.get().getPassword() )){
             return true;
         }
         return false;

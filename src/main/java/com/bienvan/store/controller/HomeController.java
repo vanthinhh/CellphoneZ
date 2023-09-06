@@ -17,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -139,6 +140,40 @@ public class HomeController {
         // model.addAttribute("users", userList);
         return "profile";
     }
+
+    @PostMapping(value = { "/profile" })
+    public String postProfilePage(@RequestParam("password") String pw, @RequestParam("new-password") String npw,
+            Model model, HttpSession session) {
+        if ((Long) session.getAttribute("id") == null) {
+            return "404";
+        }
+        User user = userService.getUserById((Long) session.getAttribute("id"));
+        if (userService.checkLogin(user.getEmail(), pw)) {
+            user.setPassword(passwordEncoder.encode(npw));
+            userService.createUser(user);
+            model.addAttribute("success", "Đã đổi password thành công");
+        } else {
+            model.addAttribute("error", "Password sai");
+        }
+        return "profile";
+    }
+
+    // @PutMapping(value = { "/profile" })
+    // public String putProfilePage(@RequestParam("name") String name, @RequestParam("gender") String gender,
+    //         Model model, HttpSession session) {
+    //     if ((Long) session.getAttribute("id") == null) {
+    //         return "404";
+    //     }
+    //     User user = userService.getUserById((Long) session.getAttribute("id"));
+    //     if (name != null && gender != null) {
+    //         user.setGender(gender);
+    //         user.setName(name);
+    //         model.addAttribute("success", "Đã thông tin thành công");
+    //     } else {
+    //         model.addAttribute("error", "Lỗi ròi");
+    //     }
+    //     return "profile";
+    // }
 
     @GetMapping(value = { "/login" })
     public String login(Model model) {

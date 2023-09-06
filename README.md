@@ -5,10 +5,10 @@
 ### version:
 + Visual Studio Code
 + JDK 17
-+ Spring 3.1.1
++ Spring 2.7.10
 
 ### Build Web Service Using:
-+ backend: Spring Boot 3.1.1
++ backend: Spring Boot 2.7.10
 + frontend: Thymeleaf, only html, css, awesome, bootstrap
 + spring security
 + spring data jpa

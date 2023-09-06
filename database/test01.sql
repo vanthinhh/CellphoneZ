@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 06, 2023 at 11:22 AM
+-- Generation Time: Sep 06, 2023 at 03:48 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -233,7 +233,6 @@ CREATE TABLE `reviews` (
   `comment` varchar(255) DEFAULT NULL,
   `create_at` datetime DEFAULT NULL,
   `rating` int(11) NOT NULL,
-  `order_id` bigint(20) DEFAULT NULL,
   `product_id` bigint(20) DEFAULT NULL,
   `user_id` bigint(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -242,8 +241,8 @@ CREATE TABLE `reviews` (
 -- Dumping data for table `reviews`
 --
 
-INSERT INTO `reviews` (`id`, `comment`, `create_at`, `rating`, `order_id`, `product_id`, `user_id`) VALUES
-(1, 'Qua depppp', '2023-09-06 15:12:25', 5, 2, 15, 1);
+INSERT INTO `reviews` (`id`, `comment`, `create_at`, `rating`, `product_id`, `user_id`) VALUES
+(2, 'Sản phẩm quá chất lượng', '2023-09-20 20:34:33', 5, 21, 1);
 
 -- --------------------------------------------------------
 
@@ -389,7 +388,6 @@ ALTER TABLE `products`
 --
 ALTER TABLE `reviews`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `FKqwgq1lxgahsxdspnwqfac6sv6` (`order_id`),
   ADD KEY `FKpl51cejpw4gy5swfar8br9ngi` (`product_id`),
   ADD KEY `FKcgy7qjc1r99dp117y9en6lxye` (`user_id`);
 
@@ -469,7 +467,7 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT for table `reviews`
 --
 ALTER TABLE `reviews`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `roles`
@@ -526,8 +524,7 @@ ALTER TABLE `products`
 --
 ALTER TABLE `reviews`
   ADD CONSTRAINT `FKcgy7qjc1r99dp117y9en6lxye` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `FKpl51cejpw4gy5swfar8br9ngi` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`),
-  ADD CONSTRAINT `FKqwgq1lxgahsxdspnwqfac6sv6` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`);
+  ADD CONSTRAINT `FKpl51cejpw4gy5swfar8br9ngi` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`);
 
 --
 -- Constraints for table `user_roles`

@@ -25,6 +25,7 @@ import com.bienvan.store.model.Category;
 import com.bienvan.store.model.Color;
 import com.bienvan.store.model.PasswordResetToken;
 import com.bienvan.store.model.Product;
+import com.bienvan.store.model.Review;
 import com.bienvan.store.model.User;
 import com.bienvan.store.repository.PasswordResetTokenRepository;
 import com.bienvan.store.service.BrandService;
@@ -34,6 +35,7 @@ import com.bienvan.store.service.EmailService;
 import com.bienvan.store.service.OrderItemService;
 import com.bienvan.store.service.OrderService;
 import com.bienvan.store.service.ProductService;
+import com.bienvan.store.service.ReviewService;
 import com.bienvan.store.service.UserService;
 
 @Controller
@@ -61,6 +63,9 @@ public class HomeController {
 
     @Autowired
     EmailService emailService;
+
+    @Autowired
+    ReviewService reviewService;
 
     @Autowired
     PasswordResetTokenRepository passwordResetTokenRepository;
@@ -145,9 +150,11 @@ public class HomeController {
     @GetMapping(value = { "/product-detail/{id}" })
     public String getProductDetailPage(@PathVariable Long id, Model model) {
         Product product = productService.getProductById(id).orElse(null);
+        List<Review> reviews = reviewService.findByProduct(product);
 
         if (product != null) {
             model.addAttribute("product", product);
+            model.addAttribute("reviews", reviews);
             return "product-detail";
         } else {
             // Xử lý trường hợp không tìm thấy sản phẩm

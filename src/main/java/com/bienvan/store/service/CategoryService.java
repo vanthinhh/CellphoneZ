@@ -22,8 +22,11 @@ public class CategoryService {
         return categoryRepository.findAll();
     }
 
-    public Optional<Category> getCategoryById(Long id) {
-        return categoryRepository.findById(id);
+    public Category getCategoryById(Long id) {
+        if(id == null){
+            return null;
+        }
+        return categoryRepository.findById(id).orElse(null);
     }
 
     public void deleteCategory(Long id) {

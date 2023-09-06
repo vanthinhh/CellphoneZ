@@ -20,6 +20,10 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public List<User> findAll(){
+        return userRepository.findAll();
+    }
+
     public List<UserDto> getAllUsers() {
         List<User> users = userRepository.findAll();
         List<UserDto> userDtos = new ArrayList<UserDto>();
@@ -33,16 +37,19 @@ public class UserService {
         return null;
     }
 
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
+    public User getUserById(Long id) {
+        if(id == null){
+            return null;
+        }
+        return userRepository.findById(id).orElse(null);
     }
 
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
 
-    public Optional<User> findByEmail(String email){
-        return userRepository.findByEmail(email);
+    public User findByEmail(String email){
+        return userRepository.findByEmail(email).orElse(null);
     }
 
     public boolean existsByEmail(String email){
@@ -50,10 +57,10 @@ public class UserService {
     }
 
     public boolean checkLogin(String email, String rawPassword){
-        Optional<User> optional = findByEmail(email);
+        User user = findByEmail(email);
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
       
-        if(optional.isPresent() && passwordEncoder.matches(rawPassword, optional.get().getPassword() )){
+        if(user != null && passwordEncoder.matches(rawPassword, user.getPassword())){
             return true;
         }
         return false;

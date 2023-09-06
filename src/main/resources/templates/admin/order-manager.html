@@ -21,7 +21,40 @@
     <link href="../css/sb-admin-2.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
+    
+    <style>
+        .table-container {
+            max-height: 580px;
+            overflow-y: auto;
+        }
 
+        .table-container thead {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .scrolling-text {
+            white-space: nowrap;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .scrolling-text h3 {
+            animation: scrolling 10s linear infinite;
+        }
+
+        @keyframes scrolling {
+            0% {
+                transform: translateX(100%);
+            }
+
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+        
+    </style>
 </head>
 
 <body id="page-top">
@@ -44,11 +77,17 @@
                         <div class="card shadow">
 
                             <div class="card-body">
-                                <h4 class="my-5 text-primary text-center text-uppercase">Danh sách đơn hàng</h4>
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="scrolling-text">
+                                            <h3>Quản lý đơn hàng</h3>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="table-responsive">
-                                <table class="table table-striped border">
-                                    <thead>
+                            <div class="table-responsive table-container">
+                                <table class="table table-striped">
+                                    <thead class="thead-dark">
                                         <tr>
                                             <th>ID</th>
                                             <th>Người đặt</th>
@@ -57,10 +96,11 @@
                                             <th>Phone</th>
                                             <th>Trạng thái</th>
                                             <th>Tổng tiền</th>
+                                            <th>Hình thức</th>
                                             <th>Hoạt động</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody class="table-bordered">
                                         <tr th:each="order : ${orders}" th:id="${order.id}">
                                             <td><a th:text="${order.id} + ' (Xem chi tiết)'"
                                                     th:href="@{/admin/order-detail/__${order.id}__}"></a></td>
@@ -72,10 +112,11 @@
                                             <td
                                                 th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 0, 'POINT')} + ' ₫'">
                                             </td>
+                                            <td th:text="${order.payment_method}"></td>
                                             <td>
                                                 <button th:if="${order.status} == 'Đang chờ'" class="btn btn-sm btn-outline-success btn-accept"
                                                     th:data-id="${order.id}">Nhận</button>
-                                                <button class="btn btn-sm btn-outline-danger btn-cancel" th:data-id="${order.id}">Hủy</button>
+                                                <button th:unless="${order.status == 'Đã hủy' or order.status == 'Đã giao'}" class="btn btn-sm btn-outline-danger btn-cancel" th:data-id="${order.id}">Hủy</button>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -265,7 +306,7 @@
 
     <!-- Custom scripts for all pages-->
     <script src="../js/sb-admin-2.min.js"></script>
-
+    <script src="../js/admin/main.js"></script>
 
     <!-- JavaScript -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -280,6 +321,7 @@
                 id: id,
                 status: status
             }
+            Swal.showLoading()
             fetch('/order', {
                 method: 'PUT',
                 headers: {
@@ -289,6 +331,7 @@
             })
                 .then(res => res.json())
                 .then(json => {
+                    Swal.hideLoading();
                     console.log('client', json);
                     if (json.code === 0) {
                         Swal.fire("Thành Công", json.message, "success");
@@ -313,7 +356,7 @@
         $('.btn-cancel').click(e => {
             let btn = e.target
             let id = btn.dataset.id
-            myFunction(id, 'Đang chờ');
+            myFunction(id, 'Đã hủy');
 
         })
 

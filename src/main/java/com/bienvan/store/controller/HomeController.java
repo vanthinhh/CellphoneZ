@@ -1,16 +1,40 @@
 package com.bienvan.store.controller;
 
-import java.util.*;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
-import com.bienvan.store.model.*;
-import com.bienvan.store.service.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpSession;
+
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.bienvan.store.model.Brand;
+import com.bienvan.store.model.Category;
+import com.bienvan.store.model.Color;
+import com.bienvan.store.model.PasswordResetToken;
+import com.bienvan.store.model.Product;
+import com.bienvan.store.model.User;
+import com.bienvan.store.repository.PasswordResetTokenRepository;
+import com.bienvan.store.service.BrandService;
+import com.bienvan.store.service.CategoryService;
+import com.bienvan.store.service.ColorService;
+import com.bienvan.store.service.EmailService;
+import com.bienvan.store.service.OrderItemService;
+import com.bienvan.store.service.OrderService;
+import com.bienvan.store.service.ProductService;
+import com.bienvan.store.service.UserService;
 
 @Controller
 public class HomeController {
@@ -35,10 +59,19 @@ public class HomeController {
     @Autowired
     ColorService colorService;
 
+    @Autowired
+    EmailService emailService;
+
+    @Autowired
+    PasswordResetTokenRepository passwordResetTokenRepository;
+
+    @Autowired
+    BCryptPasswordEncoder passwordEncoder;
+
     @GetMapping(value = { "", "/", "/home" })
     public String getHomePage(Model model, HttpSession session, @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "8") int size) {
-        List<Product> ps = productService.getProducts();
+        List<Product> ps = productService.getProductsForHomePage();
         List<Category> categories = categoryService.getAllCategories();
         List<Brand> brands = brandService.getBrands();
         List<Color> colors = colorService.getColors();
@@ -123,11 +156,132 @@ public class HomeController {
         }
     }
 
-    // @GetMapping(value = { "/cart" })
-    // public String getCartPage(Model model) {
-    // // List<UserDto> userList = userService.getAllUsers();
-    // // model.addAttribute("users", userList);
-    // return "cart";
-    // }
+    @GetMapping("/forgot-password")
+    public String showForgotPasswordForm(Model model, HttpSession session) {
+        if ((String) session.getAttribute("email") != null) {
+            return "redirect:/";
+        }
+        return "forgot-password";
+    }
 
+    @PostMapping("/forgot-password")
+    public String processForgotPasswordForm(
+            @RequestParam("email") String email,
+            RedirectAttributes redirectAttributes) {
+
+        User user = userService.findByEmail(email);
+
+        if (user == null) {
+            redirectAttributes.addFlashAttribute("error", "Email không tồn tại.");
+            return "redirect:/forgot-password";
+        }
+
+        PasswordResetToken token = new PasswordResetToken();
+        token.setUser(user);
+        token.setToken(RandomStringUtils.randomAlphanumeric(20));
+        token.setExpirationDate(new Date(System.currentTimeMillis() + 1000 * 60 * 60)); // 1 hour
+
+        passwordResetTokenRepository.save(token);
+
+        String resetPasswordUrl = "http://localhost:8080/reset-password?token=" + token.getToken();
+
+        // Send email to user
+        emailService.sendEmail(user.getEmail(), "Đặt lại mật khẩu",
+                "Vui lòng truy cập vào liên kết sau để đặt lại mật khẩu của bạn: " + resetPasswordUrl);
+
+        redirectAttributes.addFlashAttribute("success",
+                "Chúng tôi đã gửi liên kết đặt lại mật khẩu cho bạn qua email.");
+
+        return "redirect:/forgot-password";
+    }
+
+    @GetMapping("/reset-password")
+    public String showResetPasswordForm(
+            @RequestParam("token") String token,
+            Model model, HttpSession session) {
+        if ((String) session.getAttribute("email") != null) {
+            return "redirect:/";
+        }
+        PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(token);
+
+        if (passwordResetToken == null || passwordResetToken.isExpired()) {
+            model.addAttribute("error", "Token đã hết hạn!");
+            return "reset-password";
+        }
+
+        model.addAttribute("token", token);
+
+        return "reset-password";
+    }
+
+    @PostMapping("/reset-password")
+    public String processResetPasswordForm(
+            @RequestParam("password") String password,
+            @RequestParam("confirmPassword") String confirmPassword,
+            @RequestParam("token") String token,
+            RedirectAttributes redirectAttributes, Model model) {
+
+        PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(token);
+
+        if (passwordResetToken == null) {
+            model.addAttribute("error", "passwordResetToken = null");
+            return "reset-password";
+        }
+
+        if (passwordResetToken.isExpired()) {
+            model.addAttribute("error", "Token đã hết hạn!");
+            return "reset-password";
+        }
+
+        User user = passwordResetToken.getUser();
+
+        if (!password.equals(confirmPassword)) {
+            model.addAttribute("error", "Mật khẩu và mật khẩu xác nhận không khớp.");
+            return "reset-password";
+        }
+
+        user.setPassword(passwordEncoder.encode(password));
+        userService.createUser(user);
+
+        redirectAttributes.addFlashAttribute("success", "Mật khẩu đã được đặt lại thành công.");
+        return "redirect:/forgot-password";
+    }
+
+    public List<Product> geProductsByIsDeletedFalse(List<Product> products) {
+        return products.stream()
+                .filter(product -> !product.isDeleted())
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/category={id}")
+    public String CategoryPage(@RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "8") int size,
+            @PathVariable Long id,
+            Model model) {
+        Category category = categoryService.findById(id).get();
+        Page<Product> productPage = getPageOfProducts(page, size, category);
+        model.addAttribute("products", geProductsByIsDeletedFalse(productPage.getContent()));
+        model.addAttribute("category", category);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", productPage.getTotalPages());
+
+        return "category-page";
+    }
+
+    private Page<Product> getPageOfProducts(int page, int size, Category category) {
+        return productService.findProductsByCategory(category, PageRequest.of(page, size));
+    }
+
+    @GetMapping("/brand={id}")
+    public String BrandPage(@RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "8") int size, @PathVariable Long id, Model model) {
+        Brand brand = brandService.findById(id);
+        Page<Product> productPage = productService.findProductsByBrand(brand, PageRequest.of(page, size));
+        model.addAttribute("products", geProductsByIsDeletedFalse(productPage.getContent()));
+        model.addAttribute("brand", brand);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", productPage.getTotalPages());
+
+        return "brand-page";
+    }
 }

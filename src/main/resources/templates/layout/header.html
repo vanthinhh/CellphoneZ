@@ -16,7 +16,7 @@
 
                 <div class="col-12 mb-3 mb-md-0 col-md-4 order-1 order-md-2 text-center">
                     <div class="site-logo">
-                        <a href="/" class="js-logo-clone">Zmobile</a>
+                        <a href="/" class="js-logo-clone">BHHT</a>
                     </div>
                 </div>
 
@@ -25,7 +25,7 @@
                         <ul>
                             <li><a href="/profile"><span class="icon icon-person"></span></a>
                             </li>
-                            <li><a href="#"><span class="icon icon-heart-o"></span></a></li>
+                            <!-- <li><a href="#"><span class="icon icon-heart-o"></span></a></li> -->
                             <li>
                                 <a href="/cart" class="site-cart">
                                     <span class="icon icon-shopping_cart"></span>
@@ -49,45 +49,22 @@
     <nav class="site-navigation text-right text-md-center" role="navigation">
         <div class="container">
             <ul class="site-menu js-clone-nav d-none d-md-block">
-                <!-- <li class="has-children active">
-                    <a href="" class="btn btn-default btn-rounded mb-4">Home</a>
+                <li><a href="/" class="btn btn-default btn-rounded mb-4">Home</a></li>
+                <li class="has-children active">
+                    <a href="" class="btn btn-default btn-rounded mb-4">Hãng</a>
                     <ul class="dropdown">
-                        <li><a href="#">Menu One</a></li>
-                        <li><a href="#">Menu Two</a></li>
-                        <li><a href="#">Menu Three</a></li>
-                        <li class="has-children">
-                            <a href="#">Sub Menu</a>
-                            <ul class="dropdown">
-                                <li><a href="#">Menu One</a></li>
-                                <li><a href="#">Menu Two</a></li>
-                                <li><a href="#">Menu Three</a></li>
-                            </ul>
-                        </li>
+                        <li th:each="brand : ${session.brands}"><a th:text="${brand.name}"
+                                th:href="@{'/brand=' + ${brand.id}}">Menu One</a></li>
                     </ul>
                 </li>
                 <li class="has-children">
                     <a href="" class="btn btn-default btn-rounded mb-4">Danh mục</a>
                     <ul class="dropdown">
                         <li th:each="category: ${session.categories}">
-                            <a th:text="${category.name}" th:href="@{'/category/' + ${category.id}}"></a>
+                            <a th:text="${category.name}" th:href="@{'/category=' + ${category.id}}"></a>
                         </li>
                     </ul>
                 </li>
-                <li class="has-children">
-                    <a href="" class="btn btn-default btn-rounded mb-4">Giá</a>
-                    <ul class="dropdown">
-                        <li>
-                            <a>Dưới 1 triệu</a>
-                        </li>
-                        <li>
-                            <a>Từ 1 đến 5 triệu</a>
-                        </li>
-                        <li>
-                            <a>Trên 5 triệu</a>
-                        </li>
-                    </ul>
-                </li> -->
-                <li><a href="" class="btn btn-default btn-rounded mb-4">Home</a></li>
                 <li th:unless="${session.email}"><a href="" class="btn btn-default btn-rounded mb-4" data-toggle="modal"
                         data-target="#staticBackdrop2">Đăng ký</a></li>
                 <li th:unless="${session.email}"><a href="" class="btn btn-default btn-rounded mb-4" data-toggle="modal"
@@ -96,9 +73,9 @@
                         xuất</a></li>
                 <li th:if="${session.name}"><a href="/profile" th:text="${session.name}" id="logout"
                         class="btn btn-default btn-rounded mb-4">Tên User</a></li>
-                <li th:if="${session.name}"><a href="/cart/check"
-                        class="btn btn-default btn-rounded mb-4">My order</a></li>
-                <li th:if="${session.ROLE_USER}"><a href="/admin" id="admin-page"
+                <li th:if="${session.name}"><a href="/cart/check" class="btn btn-default btn-rounded mb-4">My order</a>
+                </li>
+                <li th:if="${session.ROLE_ADMIN}"><a href="/admin" id="admin-page"
                         class="btn btn-default btn-rounded mb-4">Admin</a></li>
             </ul>
         </div>

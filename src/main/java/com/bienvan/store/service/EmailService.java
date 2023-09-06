@@ -55,4 +55,12 @@ public class EmailService {
         message.setText(text);
         javaMailSender.send(message);
     }
+
+    public void sendPasswordResetEmail(String email, String resetLink) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(email);
+        message.setSubject("Lấy lại mật khẩu");
+        message.setText("Xin chào,\n\nBạn đã yêu cầu lấy lại mật khẩu.\nVui lòng truy cập đường dẫn sau để đặt lại mật khẩu của bạn:\n" + resetLink);
+        javaMailSender.send(message);
+    }
 }

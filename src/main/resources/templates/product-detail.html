@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <title>Shoppers &mdash; Colorlib e-Commerce Template</title>
+    <title>Chi tiết sản phẩm</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
@@ -51,14 +51,15 @@
         <div class="site-section">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-6">
-                        <img th:src="@{../img/__${product.image}__}" alt="Image" class="img-fluid">
+                    <div class="col-md-4">
+                        <img th:src="@{../img/__${product.image}__}" alt="Image" class="img-fluid img-thumbnail">
                     </div>
                     <div class="col-md-6">
                         <form id="item-form">
                             <h2 th:text="${product.name}" class="text-black">Tank Top T-Shirt</h2>
                             <!-- <h5 th:text="'Color:' + ${product.color}" class="mb-4"></h5> -->
                             <!-- <button type="button" th:text="${product.color}" class="btn"></button> -->
+                            <p class="mb-4" th:text="${product.description}"></p>
                             <h3><span th:text="${product.color.name}" class="badge badge-secondary">New</span></h3>
                             <!-- <p th:text="${product.description}" class="mb-4"></p> -->
                             <p><strong th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'"
@@ -86,6 +87,35 @@
                 </div>
             </div>
         </div>
+
+        <div class="site-section block-3 site-blocks-2 bg-light">
+            <div class="container">
+              <div class="row justify-content-center">
+                <div class="col-md-7 site-section-heading text-center pt-4">
+                  <h2>Sản phẩm nổi bật</h2>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="nonloop-block-3 owl-carousel">
+                    <div th:each="product : ${session.products}" class="item">
+                      <div class="block-4 text-center">
+                        <figure class="block-4-image" style="padding-top: 50px; padding-left: 25px; padding-right: 25px;">
+                          <img th:src="@{/img/product/__${product.id}__/__${product.image}__}" alt="Image placeholder" class="img-fluid">
+                        </figure>
+                        <div class="block-4-text p-4">
+                          <h3><a th:text="${product.name}" href="#">Tank Top</a></h3>
+                          <p class="mb-0" th:text="@{Còn __${product.quantity}__ sản phẩm}"></p>
+                          <p th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'"
+                                    class="text-danger font-weight-bold"></p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
 
         <!-- Include the footer fragment -->

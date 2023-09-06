@@ -2,23 +2,42 @@ package com.bienvan.store.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.bienvan.store.dto.UserDto;
-import com.bienvan.store.model.*;
-import com.bienvan.store.service.*;
-
-import javax.servlet.http.HttpSession;
+import com.bienvan.store.model.Brand;
+import com.bienvan.store.model.Category;
+import com.bienvan.store.model.Color;
+import com.bienvan.store.model.Order;
+import com.bienvan.store.model.OrderItem;
+import com.bienvan.store.model.Product;
+import com.bienvan.store.model.Role;
+import com.bienvan.store.model.User;
+import com.bienvan.store.service.BrandService;
+import com.bienvan.store.service.CategoryService;
+import com.bienvan.store.service.ColorService;
+import com.bienvan.store.service.OrderItemService;
+import com.bienvan.store.service.OrderService;
+import com.bienvan.store.service.ProductService;
+import com.bienvan.store.service.RoleService;
+import com.bienvan.store.service.UserService;
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
     @Autowired
     UserService userService;
+
+    @Autowired
+    RoleService roleService;
 
     @Autowired
     ProductService productService;
@@ -39,7 +58,10 @@ public class AdminController {
     OrderItemService orderItemService;
 
     @GetMapping(value = { "/dashboard", "" })
-    public String getAdminPage(Model model) {
+    public String getAdminPage(Model model, HttpSession session) {
+        if (session.getAttribute("ROLE_ADMIN") == null) {
+            return "404";
+        }
         List<Product> products = productService.getProducts();
         List<Order> orders = orderService.getAllOrders();
         List<UserDto> users = userService.getAllUsers();
@@ -50,18 +72,18 @@ public class AdminController {
         int canceled = 0;
 
         for (Order o : orders) {
-            if (o.getStatus() == "Đang chờ") {
+            if (o.getStatus().toString().equals("Đang chờ")) {
                 pending++;
             }
-            if (o.getStatus() == "Đang giao") {
+            if (o.getStatus().toString().equals("Đang giao")) {
                 trading++;
             }
-            if (o.getStatus().equals("Đã giao")) {
+            if (o.getStatus().toString().equals("Đã giao")) {
                 delivered++;
                 totalYear += o.getTotal();
-                System.out.println(totalYear);
+                // System.out.println(totalYear);
             }
-            if (o.getStatus() == "Đã hủy") {
+            if (o.getStatus().toString().equals("Đã hủy")) {
                 canceled++;
             }
         }
@@ -78,16 +100,14 @@ public class AdminController {
         return "/admin/dashboard";
     }
 
-    @GetMapping(value = { "/test" })
-    public String test() {
-        return "/admin/test";
-    }
-
     @GetMapping(value = { "/user-manager" })
     public String getUserManager(ModelMap model) {
-        List<UserDto> list = userService.getAllUsers();
+        List<User> users = userService.findAll();
+        List<Role> roles = roleService.findAll();
 
-        model.addAttribute("users", list);
+        model.addAttribute("users", users);
+        model.addAttribute("roles", roles);
+
         return "/admin/user-manager";
     }
 
@@ -101,7 +121,7 @@ public class AdminController {
 
     @GetMapping(value = { "/product-manager" })
     public String getProductManager(ModelMap model) {
-        List<Product> list = productService.getProducts();
+        List<Product> list = productService.getProductsForHomePage();
         List<Category> categories = categoryService.getAllCategories();
         List<Brand> brands = brandService.getBrands();
         List<Color> colors = colorService.getColors();

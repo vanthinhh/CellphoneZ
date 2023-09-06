@@ -3,10 +3,17 @@ package com.bienvan.store.model;
 import java.util.List;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.*;
 
 @Entity
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 @Table(name = "brands")
 public class Brand {
     @Id
@@ -16,5 +23,6 @@ public class Brand {
     private String name;
 
     @OneToMany(mappedBy = "brand")
+    @JsonIgnore
     private List<Product> products;
 }

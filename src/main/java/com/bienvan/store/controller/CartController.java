@@ -1,28 +1,38 @@
 package com.bienvan.store.controller;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import com.bienvan.store.model.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.bienvan.store.model.Cart;
+import com.bienvan.store.model.Order;
+import com.bienvan.store.model.OrderItem;
+import com.bienvan.store.model.Product;
+import com.bienvan.store.model.Review;
+import com.bienvan.store.model.User;
 import com.bienvan.store.payload.response.MessageResponse;
 import com.bienvan.store.service.CategoryService;
 import com.bienvan.store.service.OrderItemService;
 import com.bienvan.store.service.OrderService;
 import com.bienvan.store.service.ProductService;
+import com.bienvan.store.service.ReviewService;
 import com.bienvan.store.service.UserService;
-
-import javax.servlet.http.HttpSession;
 
 @CrossOrigin(origins = "*")
 @Controller
@@ -42,6 +52,9 @@ public class CartController {
 
     @Autowired
     OrderItemService orderItemService;
+
+    @Autowired
+    ReviewService reviewService;
 
     @GetMapping
     public String viewCart(HttpSession session, Model model) {
@@ -132,29 +145,22 @@ public class CartController {
     public ResponseEntity<?> payCart(@RequestBody Order info, HttpSession session, Model model) {
 
         if ((Long) session.getAttribute("id") == null) {
-            return ResponseEntity.ok(new MessageResponse(1, "Vui lòng đăng nhập"));
+            return ResponseEntity.ok(new MessageResponse(1, "Vui lòng đăng nhập", null));
         }
         if (info.getAddress().isEmpty() || info.getName().isEmpty() || info.getPhone().isEmpty()) {
-            return ResponseEntity.ok(new MessageResponse(1, "Vui lòng điền đầy đủ thông tin"));
+            return ResponseEntity.ok(new MessageResponse(1, "Vui lòng điền đầy đủ thông tin", null));
         }
 
         Cart cart = (Cart) session.getAttribute("cart");
 
-        ZoneId vietnamZone = ZoneId.of("Asia/Ho_Chi_Minh");
-        ZonedDateTime currentDateTimeInVietnam = ZonedDateTime.now(vietnamZone);
-
-        LocalDateTime localDateTimeInVietnam = currentDateTimeInVietnam.toLocalDateTime();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-        String formattedDateTime = localDateTimeInVietnam.format(formatter);
-
-        User buyer = userService.getUserById((Long) session.getAttribute("id")).get();
+        User buyer = userService.getUserById((Long) session.getAttribute("id"));
 
         Order order = new Order();
         order.setStatus("Đang chờ");
         order.setPhone(info.getPhone());
         order.setName(info.getName());
         order.setAddress(info.getAddress());
-        order.setCreate_at(formattedDateTime);
+        order.setCreate_at(new Date(System.currentTimeMillis()));
         order.setTotal(cart.calculateTotalPrice());
         order.setUserId(buyer);
         order.setPayment_method("COD");
@@ -180,7 +186,7 @@ public class CartController {
 
         session.removeAttribute("cart");
 
-        return ResponseEntity.ok(new MessageResponse(0, "Thanh toán thành công"));
+        return ResponseEntity.ok(new MessageResponse(0, "Thanh toán thành công", null));
     }
 
     @GetMapping("/check")
@@ -197,7 +203,7 @@ public class CartController {
         List<Order> ordersByidU = new ArrayList<>();
 
         for (Order order : orders) {
-            if (order.getUserId().getId() == idU) {
+            if (order.getUserId() != null && order.getUserId().getId() == idU) {
                 ordersByidU.add(order);
             }
         }
@@ -218,5 +224,36 @@ public class CartController {
         model.addAttribute("order", order);
 
         return "order-detail";
+    }
+
+    @GetMapping("/review/{id}")
+    public String orderReview(@PathVariable Long id, HttpSession session, Model model) {
+        return "order-review";
+    }
+
+    @PostMapping("/review/{id}")
+    public ResponseEntity<?> oReview(@PathVariable Long id, @RequestParam("rating") int rating,
+            @RequestParam("comment") String comment, HttpSession session, Model model) {
+        Long idU = (Long) session.getAttribute("id");
+        if (idU == null) {
+            return ResponseEntity.ok(new MessageResponse(1, "Vui lòng login", null));
+        }
+
+        Order order = orderService.getOrderById(id).get();
+        order.setReview(true);
+        orderService.createOrder(order);
+        User user = userService.getUserById(idU);
+        List<OrderItem> orderItems = orderItemService.getOrderItemsByOrder(order);
+        for (OrderItem orderItem : orderItems) {
+            Review review = new Review();
+            review.setComment(comment);
+            review.setRating(rating);
+            review.setCreate_at(new Date(System.currentTimeMillis()));
+            review.setProduct(orderItem.getProduct());
+            review.setUser(user);
+            reviewService.add(review);
+        }
+
+        return ResponseEntity.ok(new MessageResponse(0, "Đánh giá thành công", null));
     }
 }

@@ -1,9 +1,6 @@
 package com.bienvan.store.controller;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -59,6 +56,9 @@ public class PaymentController {
     public String submidOrder(@RequestParam String name, @RequestParam String phone, @RequestParam String streetname,
             @RequestParam String city, @RequestParam String district, @RequestParam String ward,
             HttpServletRequest request, HttpSession session) {
+        if ((Long) session.getAttribute("id") == null) {
+            return "404";
+        }
         tenKH = name;
         sdtKH = phone;
         address = streetname + ", " + ward + ", " + district + ", " + city;
@@ -90,21 +90,14 @@ public class PaymentController {
         if (paymentStatus == 1) {
             Cart cart = (Cart) session.getAttribute("cart");
 
-            ZoneId vietnamZone = ZoneId.of("Asia/Ho_Chi_Minh");
-            ZonedDateTime currentDateTimeInVietnam = ZonedDateTime.now(vietnamZone);
-
-            LocalDateTime localDateTimeInVietnam = currentDateTimeInVietnam.toLocalDateTime();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-            String formattedDateTime = localDateTimeInVietnam.format(formatter);
-
-            User buyer = userService.getUserById((Long) session.getAttribute("id")).get();
+            User buyer = userService.getUserById((Long) session.getAttribute("id"));
 
             Order order = new Order();
             order.setStatus("Đang chờ");
             order.setPhone(sdtKH);
             order.setName(tenKH);
             order.setAddress(address);
-            order.setCreate_at(formattedDateTime);
+            order.setCreate_at(new Date(System.currentTimeMillis()));
             order.setTotal(cart.calculateTotalPrice());
             order.setUserId(buyer);
             order.setPayment_method("VNPay");

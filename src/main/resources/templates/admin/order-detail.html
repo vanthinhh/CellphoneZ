@@ -23,11 +23,23 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
 
     <!-- <link rel="stylesheet" href="/css/style.css"> -->
-    <style>
 
+    <style>
         .site-blocks-table .product-thumbnail {
             width: 200px;
         }
+
+        .table-container {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .table-container thead {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
     </style>
 </head>
 
@@ -51,9 +63,9 @@
                         <div class="card shadow">
                             <div class="row mb-5">
                                 <form class="col-md-12" method="post">
-                                    <div class="site-blocks-table">
+                                    <div class="site-blocks-table table-responsive table-container">
                                         <table class="table table-bordered">
-                                            <thead>
+                                            <thead class="thead-dark">
                                                 <tr>
                                                     <th class="product-thumbnail">Hình ảnh</th>
                                                     <th class="product-name">Sản phẩm</th>
@@ -91,7 +103,7 @@
                                     <div class="row justify-content-end">
                                         <div class="col-md-3">
                                             <div class="row">
-                                                <div class="col-md-12 text-right border-bottom mb-5">
+                                                <div class="col-md-11 text-right border-bottom mb-5">
                                                     <h3 class="text-black h4 text-uppercase">Tổng tiền thanh toán</h3>
                                                 </div>
                                             </div>
@@ -99,7 +111,7 @@
                                                 <div class="col-md-6">
                                                     <span class="text-black">Tổng cộng</span>
                                                 </div>
-                                                <div class="col-md-6 text-right">
+                                                <div class="col-md-6 text-">
                                                     <strong
                                                         th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 0, 'POINT') + ' ₫'}"
                                                         class="text-black">0 ₫</strong>
@@ -137,7 +149,7 @@
 
     <!-- Custom scripts for all pages-->
     <script src="/js/sb-admin-2.min.js"></script>
-
+    <script src="/js/admin/main.js"></script>
 
     <!-- JavaScript -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

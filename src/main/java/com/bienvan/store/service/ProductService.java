@@ -40,6 +40,10 @@ public class ProductService {
         return null;
     }
 
+    public List<Product> getProductsForHomePage() {
+        return productRepository.findByIsDeletedFalse();
+    }
+
     public Optional<Product> getProductById(Long id) {
         return productRepository.findById(id);
     }
@@ -50,6 +54,22 @@ public class ProductService {
 
     public Optional<Product> findByName(String name) {
         return productRepository.findByName(name);
+    }
+
+    public List<Product> fillAllByCategory(Category category){
+        return productRepository.findByCategory(category);
+    }
+
+    public Page<Product> findProductsByCategory(Category category, Pageable pageable) {
+        return productRepository.findByCategory(category, pageable);
+    }
+
+    public Page<Product> findProductsByBrand(Brand brand, Pageable pageable) {
+        return productRepository.findByBrand(brand, pageable);
+    }
+
+    public List<Product> fillAllByBrand(Brand brand){
+        return productRepository.findByBrand(brand);
     }
 
     public Page<Product> findAll(Pageable pageable) {

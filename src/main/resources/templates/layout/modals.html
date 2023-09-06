@@ -21,10 +21,18 @@
                         <label class="form-label" for="password1">Password</label>
                     </div>
 
+                    <div class="form-group">
+                        <a href="/forgot-password">Quên mật khẩu</a>
+                    </div>
+
                     <!-- Submit button -->
                     <button type="button" id="btn-login-confirmed" class="btn btn-primary btn-block"
                         data-dismiss="modal">Login</button>
                 </form>
+                <hr>
+                <div class="alert alert-info">
+                    Bạn chưa có tài khoản? <a href="/register">Đăng ký</a> ngay hôm nay!
+                </div>
             </div>
         </div>
     </div>
@@ -41,7 +49,7 @@
                 <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="register-form" enctype="multipart/form-data">
+                <form id="register-form">
                     <!-- Name input -->
                     <div class="form-outline mb-4">
                         <input type="text" name="name" id="name2" class="form-control" />
@@ -79,6 +87,10 @@
                         data-dismiss="modal">Sign
                         up</button>
                 </form>
+                <hr>
+                <div class="alert alert-info">
+                    Bạn đã có tài khoản? <a href="/login">Đăng nhập</a> ngay!
+                </div>
             </div>
         </div>
     </div>
@@ -104,7 +116,7 @@
 
                     <!-- Email input -->
                     <div class="form-outline mb-4">
-                        <input type="text" name="phone" id="phone" class="form-control" maxlength="11"/>
+                        <input type="text" name="phone" id="phone" class="form-control" maxlength="11" />
                         <label class="form-label" for="phone">Số điện thoại</label>
                     </div>
                     <div class="form-outline mb-4">
@@ -129,8 +141,8 @@
                     <!-- Submit button -->
                     <button type="button" id="btn-checkout-confirmed" class="btn btn-primary btn-block"
                         data-dismiss="modal">Thanh toán khi nhận hàng</button>
-                    <button type="submit" id="btn-vnpay-confirmed" class="btn btn-primary btn-block"
-                        >Thanh toán qua VNPay</button>
+                    <button type="submit" id="btn-vnpay-confirmed" class="btn btn-primary btn-block">Thanh toán qua
+                        VNPay</button>
                 </form>
             </div>
         </div>

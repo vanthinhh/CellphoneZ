@@ -27,9 +27,9 @@ public class ProductInput {
     @Min(value = 0, message = "Số lượng phải lớn hơn 0")
     private int quantity;
 
-    private String color;
+    private Long color_id;
 
-    private String brand;
+    private Long brand_id;
 
     private Long user_id;
 

@@ -1,5 +1,6 @@
 package com.bienvan.store.model;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,12 +31,14 @@ public class Order {
     @NotBlank(message = "Địa chỉ không được để trống")
     private String address;
 
-    private String create_at;
+    private Date create_at;
 
     private String payment_method;
 
     @Min(value = 1, message = "Tổng tiền phải lớn hơn hoặc bằng 1")
     private double total;
+
+    private boolean isReview;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -43,6 +46,7 @@ public class Order {
 
     @OneToMany(mappedBy = "order")
     private Set<OrderItem> orderItems = new HashSet<>();
+
 
     public String getStatusColor(){
         String color = "badge-secondary";

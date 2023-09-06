@@ -42,20 +42,20 @@
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-                        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                                class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
+                        <!-- <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                                class="fas fa-download fa-sm text-white-50"></i> Generate Report</a> -->
                     </div>
 
-                    
-                    <!-- <div class="row">
+
+                    <div class="row">
                         <div class="col-xl-3 col-md-6 mb-4">
                             <div class="card border-left-primary shadow h-100 py-2">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                DOANH THU (THÁNG)</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
+                                                ĐƠN ĐANG CHỜ</div>
+                                            <div th:text="${pending}" class="h5 mb-0 font-weight-bold text-gray-800">12</div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -71,8 +71,8 @@
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                                DOANH THU (NĂM)</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
+                                                ĐƠN ĐANG GIAO</div>
+                                            <div th:text="${trading}" class="h5 mb-0 font-weight-bold text-gray-800">18</div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
@@ -87,24 +87,13 @@
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Đơn hàng
-                                                hoàn tất
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">ĐƠN ĐÃ
+                                                HỦY
                                             </div>
-                                            <div class="row no-gutters align-items-center">
-                                                <div class="col-auto">
-                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">70%</div>
-                                                </div>
-                                                <div class="col">
-                                                    <div class="progress progress-sm mr-2">
-                                                        <div class="progress-bar bg-info" role="progressbar"
-                                                            style="width: 70%" aria-valuenow="70" aria-valuemin="0"
-                                                            aria-valuemax="100"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            <div th:text="${canceled}" class="h5 mb-0 font-weight-bold text-gray-800">18</div>
                                         </div>
                                         <div class="col-auto">
-                                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                            <i class="fas fa-trash fa-2x text-gray-300"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -117,17 +106,17 @@
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                                YÊU CÂU ĐANG ĐỢI GIẢI QUYÊT</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+                                                ĐƠN ĐÃ GIAO</div>
+                                            <div th:text="${delivered}" class="h5 mb-0 font-weight-bold text-gray-800">18</div>
                                         </div>
                                         <div class="col-auto">
-                                            <i class="fas fa-comments fa-2x text-gray-300"></i>
+                                            <i class="fas fa-check fa-2x text-gray-300"></i>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div> -->
+                    </div>
 
                     <div class="row">
 
@@ -139,7 +128,8 @@
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                                 TỔNG DOANH THU</div>
-                                            <div th:text="${#numbers.formatDecimal(totalYear, 0, 'COMMA', 0, 'POINT')} + ' đ'" class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
+                                            <div th:text="${#numbers.formatDecimal(totalYear, 0, 'COMMA', 0, 'POINT')} + ' đ'"
+                                                class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
@@ -154,9 +144,11 @@
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">TỔNG ĐƠN HÀNG
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">TỔNG ĐƠN
+                                                HÀNG
                                             </div>
-                                            <div th:text="${totalOrder}" class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
+                                            <div th:text="${totalOrder}" class="h5 mb-0 font-weight-bold text-gray-800">
+                                                $215,000</div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
@@ -171,9 +163,11 @@
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">TỔNG SẢN PHẨM
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">TỔNG SẢN
+                                                PHẨM
                                             </div>
-                                            <div th:text="${totalProduct}" class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
+                                            <div th:text="${totalProduct}"
+                                                class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-shopping-bag fa-2x text-gray-300"></i>
@@ -188,9 +182,11 @@
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">TỔNG NGƯỜI DÙNG
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">TỔNG
+                                                NGƯỜI DÙNG
                                             </div>
-                                            <div th:text="${totalUser}" class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
+                                            <div th:text="${totalUser}" class="h5 mb-0 font-weight-bold text-gray-800">
+                                                $215,000</div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-users fa-2x text-gray-300"></i>
@@ -393,6 +389,18 @@
 
     </div>
     <!-- End Update user -->
+
+    <script src="../vendor/jquery/jquery.min.js"></script>
+    <!-- Bootstrap core JavaScript-->
+    <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="../vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="../js/sb-admin-2.min.js"></script>
+    <script src="../js/admin/main.js"></script>
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>

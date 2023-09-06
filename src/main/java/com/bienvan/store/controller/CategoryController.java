@@ -24,13 +24,13 @@ public class CategoryController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getCategoryById(@PathVariable Long id) {
         Map<String, Object> res = new HashMap<>();
-        Optional<Category> optional = categoryService.getCategoryById(id);
+        Category category = categoryService.getCategoryById(id);
 
-        if(optional.isPresent()){
-            Category data = optional.get();
+        if(category != null){
             res.put("code", 0);
             res.put("message", "Find category successfully");
-            res.put("data", data);
+            res.put("data", category);
+        return ResponseEntity.ok(res);
         }
         else{
             res.put("code", 1);
@@ -59,10 +59,9 @@ public class CategoryController {
     public ResponseEntity<Map<String, Object>> updateCategory(@RequestBody Category category) {
         Map<String, Object> res = new HashMap<>();
 
-        Optional<Category> optional = categoryService.getCategoryById(category.getId());
+        Category existingCategory = categoryService.getCategoryById(category.getId());
     
-        if (optional.isPresent()) {
-            Category existingCategory = optional.get();
+        if (existingCategory != null) {
             existingCategory.setName(category.getName());
     
             categoryService.createCategory(existingCategory);
@@ -79,9 +78,9 @@ public class CategoryController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         Map<String, Object> res = new HashMap<>();
-        Optional<Category> optional = categoryService.getCategoryById(id);
+        Category existingCategory = categoryService.getCategoryById(id);
 
-        if (optional.isPresent()) {
+        if (existingCategory != null) {
             categoryService.deleteCategory(id);
             res.put("code", 0);
             res.put("message", "Delete category successfully");

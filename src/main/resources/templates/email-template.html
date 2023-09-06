@@ -93,7 +93,7 @@
                             <td th:text="@{Tên người nhận: __${order.name}__}">Maria Anders</td>
                         </tr>
                         <tr>
-                            <td colspan="2"><b>Phương thức thanh toán:</b> Thanh toán khi nhận hàng (COD)</td>
+                            <td colspan="2"><b>Phương thức thanh toán: </b> <p th:text="${order.payment_method}">Thanh toán khi nhận hàng (COD)</p></td>
                         </tr>
                     </table>
                 </div>

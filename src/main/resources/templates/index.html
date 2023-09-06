@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <title>Zmobile &mdash; Trang chủ</title>
+    <title>Trang chủ</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
@@ -223,7 +223,6 @@
                 <div class="row">
                     <div th:each="product : ${session.products}" class="col-md-3 product-item product">
                         <div class="card mb-4 product-grid">
-
                             <a th:href="@{/product-detail/__${product.id}__}">
                                 <div class="card-img" style="height: 306px;"><img data-toggle="tooltip"
                                         th:title="${product.name}"
@@ -243,7 +242,6 @@
                                 <button class="btn btn-success btn-lg add-to-cart btn-add-cart"
                                     th:data-id="${product.id}">Add to Cart</button>
                             </div>
-
                         </div>
                     </div>
                 </div>

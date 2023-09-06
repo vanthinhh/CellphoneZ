@@ -20,4 +20,11 @@ public class ColorService {
     public List<Color> getColors(){
         return colorRepository.findAll();
     }
+
+    public Color findById(Long id){
+        if(id == null){
+            return null;
+        }
+        return colorRepository.findById(id).orElse(null);
+    }
 }

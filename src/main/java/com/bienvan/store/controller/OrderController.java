@@ -43,10 +43,10 @@ public class OrderController {
                 System.out.println("dang giao");
                 emailService.sendDynamicHtmlEmail(to, subject, existingOrder);
             }
-            return ResponseEntity.ok(new MessageResponse(0, "Update order success"));
+            return ResponseEntity.ok(new MessageResponse(0, "Update order success",null));
 
         }
-        return ResponseEntity.ok(new MessageResponse(1, "Update order failed"));
+        return ResponseEntity.ok(new MessageResponse(1, "Update order failed",null));
     }
 
 }

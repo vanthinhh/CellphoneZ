@@ -1,5 +1,6 @@
 package com.bienvan.store.controller;
 
+
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import com.bienvan.store.dto.*;
 import com.bienvan.store.model.*;
 import com.bienvan.store.payload.request.ProductInput;
+import com.bienvan.store.payload.response.MessageResponse;
 import com.bienvan.store.service.*;
 
 import javax.validation.Valid;
@@ -37,68 +39,56 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<?> getListProduct() {
         List<ProductDto> products = productService.getAllProducts();
-        // System.out.println("Hello");
         return ResponseEntity.ok(products);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getProductById(@PathVariable Long id) {
-        Map<String, Object> res = new HashMap<>();
         Optional<Product> optional = productService.getProductById(id);
 
         if (optional.isPresent()) {
-            res.put("code", 0);
-            res.put("message", "Find product successfully");
-            // res.put("data", data);
-        } else {
-            res.put("code", 1);
-            res.put("message", "Find product failed");
+            return ResponseEntity.ok(new MessageResponse(0, "Find product successfully", null));
         }
-        return ResponseEntity.ok(res);
+        return ResponseEntity.ok(new MessageResponse(1, "Find product failed", null));
     }
 
     @PostMapping
     public ResponseEntity<?> createProduct(@ModelAttribute @Valid ProductInput productDto, BindingResult bindingResult)
             throws IOException {
-        Map<String, Object> res = new HashMap<>();
-        // System.out.println("Post: "+productDto.toString());
         if (bindingResult.hasErrors()) {
-            res.put("code", 1);
-            res.put("message", bindingResult.getAllErrors().get(0).getDefaultMessage());
-            return ResponseEntity.badRequest().body(res);
+            return ResponseEntity
+                    .ok(new MessageResponse(1, bindingResult.getAllErrors().get(0).getDefaultMessage(), null));
         }
 
         String fileType = productDto.getImage().getContentType();
         if (fileType != null && !fileType.startsWith("image/")) {
-            res.put("code", 1);
-            res.put("message", "Vui lòng chọn tệp tin dạng hình ảnh");
-            return ResponseEntity.badRequest().body(res);
+            return ResponseEntity.ok(new MessageResponse(1, "Vui lòng chọn tệp tin dạng hình ảnh", null));
         }
 
         if (fileType == null) {
-            res.put("code", 1);
-            res.put("message", "Vui lòng thêm hình ảnh");
-            return ResponseEntity.badRequest().body(res);
+            return ResponseEntity.ok(new MessageResponse(1, "Vui lòng thêm hình ảnh", null));
         }
 
-        Optional<User> userOptional = userService.getUserById(productDto.getUser_id());
-        if (userOptional.isEmpty()) {
-            res.put("code", 1);
-            res.put("message", "Vui lòng chọn chính xác người thêm sản phẩm");
-            return ResponseEntity.badRequest().body(res);
+        User checkUser = userService.getUserById(productDto.getUser_id());
+        if (checkUser == null) {
+            return ResponseEntity.ok(new MessageResponse(1, "Vui lòng chọn chính xác người thêm sản phẩm", null));
         }
 
-        User user = userOptional.get();
-        Category category = categoryService.getCategoryById(productDto.getCategory_id()).orElse(null);
-
+        Category category = categoryService.getCategoryById(productDto.getCategory_id());
         if (category == null) {
-            res.put("code", 1);
-            res.put("message", "Vui lòng chọn loại sản phẩm");
-            return ResponseEntity.badRequest().body(res);
+            return ResponseEntity.ok(new MessageResponse(1, "Vui lòng chọn loại sản phẩm", null));
+        }
+        Brand brand = brandService.findById(productDto.getBrand_id());
+        if (brand == null) {
+            return ResponseEntity.ok(new MessageResponse(1, "Vui lòng chọn hãng", null));
         }
 
-        // Brand brand = brandService.findByName(productDto.getBrand());
-        // Color color = colorService.findByName(productDto.getColor());
+        Color color = colorService.findById(productDto.getColor_id());
+        if (color == null) {
+            return ResponseEntity.ok(new MessageResponse(1, "Vui lòng chọn màu", null));
+        }
+
+        User user = checkUser;
         Product product = new Product();
         product.setName(productDto.getName());
         product.setDescription(productDto.getDescription());
@@ -107,8 +97,8 @@ public class ProductController {
         product.setImage(productDto.getImage().getOriginalFilename());
         product.setUser(user);
         product.setCategory(category);
-        // product.setBrand(brand);
-        // product.setColor(color);
+        product.setBrand(brand);
+        product.setColor(color);
         Product created = productService.createProduct(product);
 
         String staticFolderPath = "src/main/resources/static/img/product/" + created.getId() + "/";
@@ -124,52 +114,50 @@ public class ProductController {
         Path path = Paths.get(staticFolderPath + product.getImage());
         Files.write(path, productDto.getImage().getBytes());
 
-        res.put("code", 0);
-        res.put("message", "Thêm sản phẩm thành công");
-        return ResponseEntity.ok(res);
+        return ResponseEntity.ok(new MessageResponse(0, "Thêm sản phẩm thành công", null));
     }
 
     @PutMapping // update
-    public ResponseEntity<Map<String, Object>> updateCategory(@ModelAttribute @Valid ProductInput productDto,
+    public ResponseEntity<?> updateCategory(@ModelAttribute @Valid ProductInput productDto,
             BindingResult bindingResult) throws IOException {
-        Map<String, Object> res = new HashMap<>();
 
-        // System.out.println("Put: "+productDto.toString());
         if (bindingResult.hasErrors()) {
-            res.put("code", 1);
-            res.put("message", bindingResult.getAllErrors().get(0).getDefaultMessage());
-            return ResponseEntity.badRequest().body(res);
+            return ResponseEntity
+                    .ok(new MessageResponse(1, bindingResult.getAllErrors().get(0).getDefaultMessage(), null));
         }
 
         String fileType = productDto.getImage().getContentType();
         if (fileType != null && !fileType.startsWith("image/")) {
-            res.put("code", 1);
-            res.put("message", "Vui lòng chọn tệp tin dạng hình ảnh");
-            return ResponseEntity.badRequest().body(res);
+            return ResponseEntity.ok(new MessageResponse(1, "Vui lòng chọn tệp tin dạng hình ảnh", null));
         }
 
         if (fileType == null) {
-            res.put("code", 1);
-            res.put("message", "Vui lòng thêm hình ảnh");
-            return ResponseEntity.badRequest().body(res);
+            return ResponseEntity.ok(new MessageResponse(1, "Vui lòng thêm hình ảnh", null));
         }
 
         Optional<Product> optional = productService.getProductById(productDto.getId());
 
         if (optional.isPresent()) {
 
-            // User user = userService.getUserById(productDto.getUser_id()).orElse(null);
+            // User user = userService.getUserById(productDto.getUser_id());
             // if (user == null) {
-            // res.put("code", 1);
-            // res.put("message", "Vui lòng chọn chính xác người thêm sản phẩm");
-            // return ResponseEntity.badRequest().body(res);
+            // return ResponseEntity.ok(new MessageResponse(1, "Vui lòng chọn chính xác
+            // người thêm sản phẩm", null));
             // }
 
-            Category category = categoryService.getCategoryById(productDto.getCategory_id()).orElse(null);
+            Category category = categoryService.getCategoryById(productDto.getCategory_id());
             if (category == null) {
-                res.put("code", 1);
-                res.put("message", "Vui lòng chọn loại sản phẩm");
-                return ResponseEntity.badRequest().body(res);
+                return ResponseEntity.ok(new MessageResponse(1, "Vui lòng chọn loại sản phẩm", null));
+            }
+
+            Brand brand = brandService.findById(productDto.getBrand_id());
+            if (brand == null) {
+                return ResponseEntity.ok(new MessageResponse(1, "Vui lòng chọn hãng", null));
+            }
+
+            Color color = colorService.findById(productDto.getColor_id());
+            if (color == null) {
+                return ResponseEntity.ok(new MessageResponse(1, "Vui lòng chọn màu", null));
             }
 
             Product existing = optional.get();
@@ -180,6 +168,8 @@ public class ProductController {
             existing.setImage(productDto.getImage().getOriginalFilename());
             // existing.setUser(user);
             existing.setCategory(category);
+            existing.setBrand(brand);
+            existing.setColor(color);
 
             productService.createProduct(existing);
 
@@ -196,29 +186,24 @@ public class ProductController {
             Path path = Paths.get(staticFolderPath + existing.getImage());
             Files.write(path, productDto.getImage().getBytes());
 
-            res.put("code", 0);
-            res.put("message", "Cập nhật sản phẩm thành công");
-        } else {
-            res.put("code", 1);
-            res.put("message", "Không tìm thấy id sản phẩm này");
+            return ResponseEntity.ok(new MessageResponse(0, "Cập nhật sản phẩm thành công", null));
         }
-        return ResponseEntity.ok(res);
+        return ResponseEntity.ok(new MessageResponse(1, "Không tìm thấy id sản phẩm này", null));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-        Map<String, Object> res = new HashMap<>();
         Optional<Product> optional = productService.getProductById(id);
 
         if (optional.isPresent()) {
-            productService.deleteProduct(id);
-            res.put("code", 0);
-            res.put("message", "Xóa sản phẩm thành công");
-        } else {
-            res.put("code", 1);
-            res.put("message", "Xóa sản phẩm thất bại");
+            Product product = optional.get();
+            product.setDeleted(true);
+            productService.createProduct(product);
+            return ResponseEntity.ok(new MessageResponse(0, "Xóa sản phẩm thành công", null));
+
         }
-        return ResponseEntity.ok(res);
+        return ResponseEntity.ok(new MessageResponse(1, "Xóa sản phẩm thất bại", null));
+
     }
 
     // @GetMapping("/search") // tìm kiếm tên theo keyword

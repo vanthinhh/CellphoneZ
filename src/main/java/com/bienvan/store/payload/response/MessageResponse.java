@@ -3,9 +3,11 @@ package com.bienvan.store.payload.response;
 public class MessageResponse {
     private int code;
     private String message;
-    public MessageResponse(int code, String message) {
+    private Object data;
+    public MessageResponse(int code, String message, Object data) {
         this.code = code;
         this.message = message;
+        this.data = data;
     }
     public int getCode() {
         return code;
@@ -19,8 +21,12 @@ public class MessageResponse {
     public void setMessage(String message) {
         this.message = message;
     }
+    public Object getData() {
+        return data;
+    }
+    public void setData(Object data) {
+        this.data = data;
+    }
 
-
-    
     
 }

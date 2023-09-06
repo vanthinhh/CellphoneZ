@@ -4,15 +4,24 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.*;
-import javax.validation.constraints.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 @Entity
 @Data
@@ -30,8 +39,6 @@ public class User {
     @NotBlank(message = "Email không được để trống")
     private String email;
     
-    @NotEmpty(message = "Thiếu password")
-    @Size(min = 6, message = "Mật khẩu phải có ít nhất 6 ký tự.")
     private String password;
 
     @NotBlank(message = "Tên không được để trống")
@@ -40,17 +47,15 @@ public class User {
     @NotBlank(message = "Vui lòng chọn giới tính")
     private String gender;
 
-    // Ví dụ quan hệ nhiều-1 (một User có nhiều Product)
-
     @OneToMany(mappedBy = "user")
     private List<Product> products;
 
     @OneToMany(mappedBy = "userId")
     private List<Order> orders;
 
+    @NotEmpty(message = "Yêu cầu cấp quyền")
     @ManyToMany
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> userRoles = new HashSet<>();
-
 
 }

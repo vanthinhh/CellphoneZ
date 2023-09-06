@@ -1,10 +1,7 @@
 package com.bienvan.store.controller;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import javax.servlet.http.HttpSession;
@@ -16,7 +13,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -30,6 +26,7 @@ import com.bienvan.store.model.ERole;
 import com.bienvan.store.model.Role;
 import com.bienvan.store.model.User;
 import com.bienvan.store.model.mapper.UserMapper;
+import com.bienvan.store.payload.response.MessageResponse;
 import com.bienvan.store.service.ProductService;
 import com.bienvan.store.service.RoleService;
 import com.bienvan.store.service.UserService;
@@ -57,97 +54,70 @@ public class UserController {
 
     @GetMapping("/{id}") // get 1 user
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
-        Map<String, Object> res = new HashMap<>();
-        Optional<User> userOptional = userService.getUserById(id);
-        if (userOptional.isPresent()) {
-            UserDto userDto = UserMapper.toUserDto(userOptional.get());
-            res.put("code", 0);
-            res.put("message", "Find user successfully");
-            res.put("data", userDto);
-        } else {
-            res.put("code", 1);
-            res.put("message", "Find user failed");
+        User user = userService.getUserById(id);
+        if (user != null) {
+            return ResponseEntity.ok(new MessageResponse(0, "Find user success", UserMapper.toUserDto(user)));
         }
-        return ResponseEntity.ok(res);
+        return ResponseEntity.ok(new MessageResponse(1, "Find user failed", null));
     }
 
     @PostMapping // tạo user mới
     public ResponseEntity<?> createUser(@RequestBody @Valid User user,
             BindingResult bindingResult) {
-        Map<String, Object> res = new HashMap<>();
-
         if (bindingResult.hasErrors()) {
-            res.put("code", 1);
-            res.put("message", bindingResult.getAllErrors().get(0).getDefaultMessage());
-            return ResponseEntity.ok(res);
+            return ResponseEntity
+                    .ok(new MessageResponse(1, bindingResult.getAllErrors().get(0).getDefaultMessage(), null));
+        }
+        if (user.getPassword().length() < 6) {
+            return ResponseEntity.ok(new MessageResponse(1, "Password phải trên 6 kí tự", null));
         }
 
-        Optional<User> userOptional = userService.findByEmail(user.getEmail());
-        if (!userOptional.isPresent()) {
-            String encodePW = passwordEncoder.encode(user.getPassword());
-            user.setPassword(encodePW);
+        User checkUser = userService.findByEmail(user.getEmail());
+        if (checkUser == null) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
             User newUser = userService.createUser(user);
-            res.put("code", 0);
-            res.put("message", "Add user successfully");
-            res.put("data", newUser);
-        } else {
-            res.put("code", 1);
-            res.put("message", "Email đã tồn tại");
+            return ResponseEntity.ok(new MessageResponse(0, "Add user successfully", newUser));
         }
-        return ResponseEntity.ok(res);
+        return ResponseEntity.ok(new MessageResponse(1, "Email đã tồn tại", null));
     }
 
     @PutMapping // update
-    public ResponseEntity<Map<String, Object>> updateUser(@RequestBody @Valid UserDto userDto,
+    public ResponseEntity<?> updateUser(@RequestBody @Valid User user,
             BindingResult bindingResult) {
-        Map<String, Object> res = new HashMap<>();
-
         if (bindingResult.hasErrors()) {
-            res.put("code", 1);
-            res.put("message", bindingResult.getAllErrors().get(0).getDefaultMessage());
-            return ResponseEntity.ok(res);
+            return ResponseEntity
+                    .ok(new MessageResponse(1, bindingResult.getAllErrors().get(0).getDefaultMessage(), null));
         }
 
         // kiểm tra xem người dùng có tồn tại hay không
-        Optional<User> optionalUser = userService.getUserById(userDto.getId());
+        User existingUser = userService.getUserById(user.getId());
 
-        if (optionalUser.isPresent()) {
-            User existingUser = optionalUser.get();
-            existingUser.setEmail(userDto.getEmail());
-            existingUser.setName(userDto.getName());
-            existingUser.setGender(userDto.getGender());
-
+        if (existingUser != null) {
+            existingUser.setEmail(user.getEmail());
+            existingUser.setName(user.getName());
+            existingUser.setGender(user.getGender());
+            existingUser.setUserRoles(user.getUserRoles());
             userService.createUser(existingUser);
-            res.put("code", 0);
-            res.put("message", "Update user successfully");
-        } else {
-            res.put("code", 1);
-            res.put("message", "Update user failed");
+            return ResponseEntity.ok(new MessageResponse(0, "Update user successfully", null));
         }
-        return ResponseEntity.ok(res);
+        return ResponseEntity.ok(new MessageResponse(1, "Update user failed", null));
     }
 
     @DeleteMapping("/{id}") // xóa user
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-        Map<String, Object> res = new HashMap<>();
-        Optional<User> userOptional = userService.getUserById(id);
-        if (userOptional.isPresent()) {
+        User existingUser = userService.getUserById(id);
+        if (existingUser != null) {
             userService.deleteUser(id);
-            res.put("code", 0);
-            res.put("message", "Delete user successfully");
-        } else {
-            res.put("code", 1);
-            res.put("message", "Delete user failed");
+            return ResponseEntity.ok(new MessageResponse(0, "Delete user successfully", null));
         }
-        return ResponseEntity.ok(res);
+        return ResponseEntity.ok(new MessageResponse(1, "Delete user failed", null));
     }
 
     @PostMapping(value = { "/login" })
     public ResponseEntity<?> checkLogin(@RequestParam("email") String email, @RequestParam("password") String password,
             HttpSession session) {
-        Map<String, Object> res = new HashMap<>();
         if (userService.checkLogin(email, password)) {
-            User info = userService.findByEmail(email).get();
+            User info = userService.findByEmail(email);
             for (Role r : info.getUserRoles()) {
                 session.setAttribute(r.getName().toString(), r.getName().toString());
                 System.out.println(r.getName().toString());
@@ -156,35 +126,34 @@ public class UserController {
             session.setAttribute("email", email);
             session.setAttribute("name", info.getName());
             session.setAttribute("gender", info.getGender());
+            
 
-            res.put("code", 0);
-            res.put("message", "Đăng nhập thành công");
-        } else {
-            res.put("code", 1);
-            res.put("message", "Email hoặc mật khẩu không chính xác");
+
+            return ResponseEntity.ok(new MessageResponse(0, "Đăng nhập thành công", null));
         }
-
-        return ResponseEntity.ok(res);
+        return ResponseEntity.ok(new MessageResponse(1, "Email hoặc mật khẩu không chính xác", null));
     }
 
     @PostMapping(value = { "/register" })
-    public ResponseEntity<?> register(@ModelAttribute @Valid User user,
+    public ResponseEntity<?> register(@RequestBody @Valid User user,
             BindingResult bindingResult,
             HttpSession session) {
-        Map<String, Object> res = new HashMap<>();
         if (bindingResult.hasErrors()) {
-            res.put("code", 1);
-            res.put("message", bindingResult.getAllErrors().get(0).getDefaultMessage());
-            return ResponseEntity.ok(res);
+            return ResponseEntity
+                    .ok(new MessageResponse(1, bindingResult.getAllErrors().get(0).getDefaultMessage(), null));
         }
-        if (!userService.findByEmail(user.getEmail()).isPresent()) {
+        if (user.getPassword().length() < 6) {
+            return ResponseEntity.ok(new MessageResponse(1, "Password phải trên 6 kí tự", null));
+        }
+        User checkUser = userService.findByEmail(user.getEmail());
+        if (checkUser == null) {
 
             String encodePW = passwordEncoder.encode(user.getPassword());
             user.setPassword(encodePW);
-            
+
             Role role = roleService.findByName(ERole.ROLE_USER).get();
             Set<Role> listRoles = new HashSet<Role>();
-            
+
             listRoles.add(role);
             user.setUserRoles(listRoles);
             User newUser = userService.createUser(user);
@@ -192,30 +161,21 @@ public class UserController {
             for (Role r : listRoles) {
                 session.setAttribute(r.getName().toString(), r.getName().toString());
             }
-            
+
             session.setAttribute("id", newUser.getId());
             session.setAttribute("email", newUser.getEmail());
             session.setAttribute("name", newUser.getName());
             session.setAttribute("gender", newUser.getGender());
 
-            
+            return ResponseEntity.ok(new MessageResponse(0, "Đăng ký thành công", null));
 
-            res.put("code", 0);
-            res.put("message", "Đăng ký thành công");
-        } else {
-            res.put("code", 1);
-            res.put("message", "Email đã tồn tại");
         }
-
-        return ResponseEntity.ok(res);
+        return ResponseEntity.ok(new MessageResponse(1, "Email đã tồn tại", null));
     }
 
     @GetMapping("logout")
     public ResponseEntity<?> logout(HttpSession session) {
         session.invalidate();
-        Map<String, Object> res = new HashMap<>();
-        res.put("code", 0);
-        res.put("message", "Đăng xuất thành công");
-        return ResponseEntity.ok(res);
+        return ResponseEntity.ok(new MessageResponse(0, "Đăng xuất thành công", null));
     }
 }

@@ -126,7 +126,7 @@ public class HomeController {
             products = productService.search(minPrice, maxPrice, byBrand, byColor, null);
         }
 
-        session.setAttribute("products", products);
+        session.setAttribute("products", geProductsByIsDeletedFalse(products));
 
         return "index";
     }
